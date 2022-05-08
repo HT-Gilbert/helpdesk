@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/layout">
+   	<!-- layout Content -->
+	<th:block layout:fragment="content">
+		<!--<div id="wrapper">-->
+		<div class="container">
+			<hr>
+			<div class="row">
+				<div class="col-md-2">
+					<!-- NAV 영역-->
+					<th:block th:replace="/layout/fragments/nav :: sidebarFragment"></th:block>
+				</div>
+				<div class="col-md-10">
+				<!-- <div class="container">  -->
+					<form action="/board/list" id="frm" method="get">
+						<div class="col-md-12 mt-4">
+							<table class="table text-center">
+								<thead class="thead-strong">
+									<tr>
+										<th sec:authorize="hasRole('ROLE_ADMIN')" style="background-color: #eeeeee;" th:align="center" width="5%"><input type="checkbox" id="chkAll"></th>
+										<th style="background-color: #eeeeee;" th:align="center" width="10%">번호</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="">제목</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="20%">작성자</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="10%">조회수</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="20%">작성일</th>
+									</tr>
+								</thead>
+								<tbody id="tbody">
+									<tr th:each="list,index : ${resultMap.list}" th:with="paging=${resultMap.paging}">
+										<td sec:authorize="hasRole('ROLE_ADMIN')">
+											<input type="checkbox" name="deleteId" th:value="${list.id}">
+										</td>
+										<td th:align="center" th:text="${(resultMap.totalCnt - index.index) - (paging.pageNumber * paging.pageSize)}"></td>
+										<td th:align="left"><a th:href="@{view(id=${list.id})}">[[${list.title}]]</a></td>
+										<td th:align="center" th:text="${list.registerId}"></td>
+										<td th:align="center" th:text="${list.readCnt}"></td>
+										<td th:align="center" th:text="${list.registerTime}"></td>
+									<tr>
+								</tbody>
+							</table>
+							<div class="row">
+								<div class="col">
+									<ul class="pagination">
+										<li class="page-item" th:each="index : ${#numbers.sequence(1, resultMap.totalPage)}" th:with="paging=${resultMap.paging}">
+											<a class="page-link" th:classappend="${paging.pageNumber ==  (index-1)} ? bg-primary : bg-secondary" th:href="@{./list(page=${index - 1},page=${paging.pageSize})}">
+												<span class="text-white" th:text="${index}"></span>
+											</a>
+										</li>										
+									</ul>
+									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-danger" onclick="fnDelete()">삭제</button>
+									<button th:align="right" type="button" class="btn btn-primary" onclick="javascript:location.href='/board/write'">글쓰기</button>																	
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+	    </div>
+	    <script th:inline="javascript">
+	    	// header checkbox event
+	    	$("#chkAll").click(function() {
+	    		if (this.checked) {
+	    			$("input[name='deleteId']").prop("checked", true);
+	    		} else {
+	    			$("input[name='deleteId']").prop("checked", false);
+	    		}
+	    	});
+	    	
+	    	// body checkbox event
+	    	$("input[name='deleteId']").click(function() {
+	    		let delInpLen = $("input[name='deleteId']").length;
+	    		let delInpChkLen = $("input[name='deleteId']:checked").length;
+	    		
+	    		if (delInpLen == delInpChkLen) {
+	    			$("#chkAll").prop("checked", true);
+	    		} else {
+	    			$("#chkAll").prop("checked", false);
+	    		}
+	    	});
+	    
+			function fnDelete() {
+				let delInpChkLen = $("input[name='deleteId']:checked").length;
+				
+				if (delInpChkLen > 0) {
+					if (confirm("Do you want to delete it?")) {
+						let frm = $("#frm");
+						frm.attr("action","/board/delete");
+						frm.attr("method","post");
+						frm.submit();
+					}
+				} else {
+					alert("Not selected.");
+				}
+			}
+		</script>
+	</th:block>
+</html>
