@@ -1,9 +1,5 @@
 package com.help.service.member;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,10 +13,7 @@ import com.help.entity.member.LoginUser;
 import com.help.entity.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+//import javax.persistence.EntityManager;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +36,7 @@ public class MemberService implements UserDetailsService {
 	private final MemberRepository memberRepository;
 
     //@PersistenceContext
-    private static EntityManager entityManager;
+    //private static EntityManager entityManager;
 
     //@Autowired 
     PasswordEncoder passwordEncoder;

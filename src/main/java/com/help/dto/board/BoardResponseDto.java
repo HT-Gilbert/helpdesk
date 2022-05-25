@@ -15,6 +15,7 @@ public class BoardResponseDto {
 	private int readCnt;
 	private String registerId;
 	private LocalDateTime registerTime;
+	private boolean isNotice = false;
 	
 	public BoardResponseDto(Board entity) {
 		this.id = entity.getId();
@@ -23,12 +24,13 @@ public class BoardResponseDto {
 		this.readCnt = entity.getReadCnt();
 		this.registerId = entity.getRegisterId();
 		this.registerTime = entity.getRegisterTime();
+		this.isNotice = entity.isNotice();
 	}
 
 	@Override
 	public String toString() {
 		return "BoardResponseDto [id=" + id + ", title=" + title + ", content=" + content + ", readCnt=" + readCnt
-				+ ", registerId=" + registerId + ", registerTime=" + registerTime + "]";
+				+ ", registerId=" + registerId + ", registerTime=" + registerTime + ", isNotice=" + isNotice + "]";
 	}
 	
 	public String getRegisterTime() {

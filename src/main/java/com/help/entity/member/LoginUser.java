@@ -1,22 +1,10 @@
 package com.help.entity.member;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.help.entity.BaseTimeEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-//import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.NoArgsConstructor;
-import javax.persistence.Table;
 
 @Getter
 @Setter

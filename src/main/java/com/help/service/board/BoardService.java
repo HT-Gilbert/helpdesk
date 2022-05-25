@@ -1,11 +1,14 @@
 package com.help.service.board;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -50,7 +53,24 @@ public class BoardService {
 		
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
-		Page<Board> list = boardRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "registerTime")));
+		/* 정렬 예제
+		List<Order> sortList = new LinkedList<>();  
+sortList.add(Order.asc("item"));  
+sortList.add(Order.desc("id"));
+
+Sort sort = Sort.by(sortList); 
+
+
+return this.todoRepository.findAll(sort);  
+		*/
+
+		List<Order> sortList = new LinkedList<>();
+		sortList.add(Order.desc("isNotice"));
+		sortList.add(Order.desc("registerTime"));
+		Sort sort = Sort.by(sortList); 
+
+		Page<Board> list = boardRepository.findAll(PageRequest.of(page, size, sort));
+		//Page<Board> list = boardRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "registerTime")));
 		
 		resultMap.put("list", list.stream().map(BoardResponseDto::new).collect(Collectors.toList()));
 		resultMap.put("paging", list.getPageable());

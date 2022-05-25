@@ -14,7 +14,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 			+ "SET TITLE = :#{#boardRequestDto.title}, "
 			+ "CONTENT = :#{#boardRequestDto.content}, "
 			+ "REGISTER_ID = :#{#boardRequestDto.registerId}, "
-			+ "UPDATE_TIME = NOW() "
+			+ "isNotice = :#{#boardRequestDto.notice}, "
+			+ "UPDATE_TIME = NOW() "			
 			+ "WHERE ID = :#{#boardRequestDto.id}";
 	
 	static final String UPDATE_BOARD_READ_CNT_INC = "UPDATE Board "

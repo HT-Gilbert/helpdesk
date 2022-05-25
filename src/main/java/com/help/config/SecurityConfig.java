@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
         http.csrf().disable()	// csrf 토큰을 비활성화
         	.authorizeRequests() // 요청 URL에 따라 접근 권한을 설정
-			.antMatchers("/","/login/**","/js/**","/css/**","/image/**","/board/**").permitAll() // 해당 경로들은 접근을 허용
+			.antMatchers("/","/login/**","/js/**","/css/**","/image/**","/board/**","/main/**").permitAll() // 해당 경로들은 접근을 허용
 			.anyRequest() // 다른 모든 요청은
 			.authenticated() // 인증된 유저만 접근을 허용
 		.and()
@@ -74,7 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.and()
 			.logout()
 			.logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // 로그아웃 URL
-		    .logoutSuccessUrl("/login") // 성공시 리턴 URL
+		    .logoutSuccessUrl("/") // 성공시 리턴 URL
 		    .invalidateHttpSession(true) // 인증정보를 지우하고 세션을 무효화
 		    .deleteCookies("JSESSIONID") // JSESSIONID 쿠키 삭제
 			.permitAll()

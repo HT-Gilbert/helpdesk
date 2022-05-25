@@ -30,7 +30,11 @@
 										<td sec:authorize="hasRole('ROLE_ADMIN')">
 											<input type="checkbox" name="deleteId" th:value="${list.id}">
 										</td>
-										<td th:align="center" th:text="${(resultMap.totalCnt - index.index) - (paging.pageNumber * paging.pageSize)}"></td>
+
+										<!-- 공지글이면 '공지'로 표시-->
+										<td th:align="center" style="font-weight:bold; color: blue" th:if="${list.isNotice}" th:utext="공지"></td>
+										<td th:align="center" th:unless="${list.isNotice}" th:text="${(resultMap.totalCnt - index.index) - (paging.pageNumber * paging.pageSize)}"></td>
+
 										<td th:align="left"><a th:href="@{view(id=${list.id})}">[[${list.title}]]</a></td>
 										<td th:align="center" th:text="${list.registerId}"></td>
 										<td th:align="center" th:text="${list.readCnt}"></td>

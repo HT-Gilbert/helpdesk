@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org">
+    <th:block th:fragment="mboard">
+        <div class="col-md-5">
+            <form action="/main/mboard" id="frm" method="get">
+            <!-- <div class="container">  -->
+                <h4>
+                    공지사항
+                </h4>
+                <hr>
+            
+                <table class="table text-center">
+                    <thead>
+                        <tr>										
+                            <th style="background-color: #eeeeee;" th:align="center" width="10%">번호</th>
+                            <th style="background-color: #eeeeee;" th:align="center" width="">제목</th>
+                            <th style="background-color: #eeeeee;" th:align="center" width="20%">작성자</th>
+                            <th style="background-color: #eeeeee;" th:align="center" width="30%">작성일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+                        <tr th:each="list,index : ${resultMap.list}" th:with="paging=${resultMap.paging}">										
+                            <!-- 공지글이면 '공지'로 표시-->
+                            <td th:align="center" style="font-weight:bold; color: blue" th:if="${list.isNotice}" th:utext="공지"></td>
+                            <td th:align="center" th:unless="${list.isNotice}" th:text="${(resultMap.totalCnt - index.index) - (paging.pageNumber * paging.pageSize)}"></td>
+                            <td th:align="left"><a th:href="@{board/view(id=${list.id})}">[[${list.title}]]</a></td>
+                            <td th:align="center" th:text="${list.registerId}"></td>
+                            <td th:align="center" th:text="${#strings.substring(list.registerTime, 0, 10)}"></td>
+                        <tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </th:block>
+</html>

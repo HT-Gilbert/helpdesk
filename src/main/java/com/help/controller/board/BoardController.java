@@ -8,27 +8,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.help.dto.board.BoardRequestDto;
 import com.help.service.board.BoardService;
+
 import lombok.RequiredArgsConstructor;
+import com.help.service.main.MenuService;
 
 @RequiredArgsConstructor
 @Controller
 public class BoardController {
 	
 	private final BoardService boardService;
-	
-	@GetMapping("/")
-	public String getMainBoardListPage(Model model
-			, @RequestParam(required = false, defaultValue = "0") Integer page
-			, @RequestParam(required = false, defaultValue = "8") Integer size) throws Exception {
-		
-		try {
-			model.addAttribute("resultMap", boardService.findAll(page, size));
-		} catch (Exception e) {
-			throw new Exception(e.getMessage()); 
-		}
-		
-		return "/index.html";
-	}
+	private final MenuService menuService;
 
 	@GetMapping("/board/list")
 	public String getBoardListPage(Model model
@@ -37,6 +26,7 @@ public class BoardController {
 		
 		try {
 			model.addAttribute("resultMap", boardService.findAll(page, size));
+			model.addAttribute("menuList", menuService.getMenu());
 		} catch (Exception e) {
 			throw new Exception(e.getMessage()); 
 		}

@@ -1,20 +1,21 @@
 package com.help.controller.member;
 
-import com.help.entity.member.Member;
 import com.help.service.member.MemberService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import java.util.List;
 
+import lombok.RequiredArgsConstructor;
+
+import com.help.service.main.MenuService;
+
+@RequiredArgsConstructor
 @Controller
 public class MemberController {
 	
     MemberService memberService;
+    private final MenuService menuService;
 
  	@GetMapping("/login")
 	public String getLoginPage(Model model,
@@ -22,6 +23,7 @@ public class MemberController {
 			@RequestParam(value = "exception", required = false) String exception) {
 		model.addAttribute("error", error);
 		model.addAttribute("exception", exception);
+        model.addAttribute("menuList", menuService.getMenu());
 		return "/member/login";
 	}
 

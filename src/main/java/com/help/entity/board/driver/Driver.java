@@ -1,4 +1,4 @@
-package com.help.entity.board;
+package com.help.entity.board.driver;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,40 +10,28 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class Board extends BaseTimeEntity {
+public class Driver extends  BaseTimeEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String title;	
 	private String content;
+    private String tag;
 	private int readCnt;
 	private String registerId;
-	private boolean isNotice;
-	
-	/*
-    @Transient @Builder.Default
-    private List<BoardReply> replies = Collections.emptyList();
-    @Transient @Builder.Default
-    private long replyCount = 0L;
-    @Transient @Builder.Default
-    private String authorNickname = null;
-	*/
-	//private boolean isNocice;
-	//private boolena isFrozen;
-
-	@Builder
-	public Board(Long id, String title, String content, int readCnt, String registerId, boolean isNotice) {
+		
+		@Builder
+	public Driver(Long id, String title, String content, String tag, int readCnt, String registerId) {
 		this.id = id; 
 		this.title = title;
 		this.content = content;
+        this.tag = tag;
 		this.readCnt = readCnt;
 		this.registerId = registerId;
-		this.isNotice =  isNotice;
 	}
 }

@@ -14,6 +14,30 @@
                 </a>
             </li>
             <hr>
+            
+            <th:block th:each="navmenu: ${menuList}" th:if="${navmenu.menuUpperid == 10}">
+            <li>
+                <a th:href="@{/#}" class="nav-link link-dark"  th:text="${navmenu.menuName}"></a>
+                <ul style="margin-left: 20px;">
+                    <li th:each="submenu: ${menuList}" th:if="${navmenu.menuLv == submenu.menuUpperid}">
+                        <a th:href="@{/#}" th:text="${submenu.menuName}"></a>
+                    </li>
+                </ul>
+
+            </li>
+            <hr>
+            </th:block>
+            <!-- 
+            <th:block th:each="navmenu: ${menuList}">
+                <a th:href="@{/#}" class="nav-link link-dark" th:if="${navmenu.menuUpperid == 10}" th:text="${navmenu.menuName}">
+                    <a th:href="@{/#}" th:each="submenu: ${menuList}" th:if="${navmenu.menuLv == submenu.menuUpperid}" th:text="${submenu.menuName}">
+                        <ul class="icon-list" style="margin-left: 20px;" >
+                            <li>
+                            </li>
+                        </ul>
+            </th:block>
+            -->
+            <!--
             <li>
                 <a href="#" class="nav-link link-dark">
                     <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
@@ -40,8 +64,8 @@
                 <li><a href="#">서식자료실</a></li>
                 <li><a href="#">임시자료실</a></li>
                 <li><a href="#">메뉴얼</a></li>
-            </ul>
-            <hr>
+            </ul>            
+            <hr>            
             <li>
                 <a href="#" class="nav-link link-dark">
                     <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"/></svg>
@@ -62,6 +86,7 @@
                     구 119서버
                 </a>
             </li>
+            -->
             <hr>
         </ul>
     </div>
