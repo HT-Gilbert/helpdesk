@@ -1,6 +1,6 @@
 package com.help.controller.admin;
 
-public class adminController {
+public class AdminController {
     /*
     @GetMapping("/admin/addCategory")
 	public String getCategoryAddPage(Model model, BoardRequestDto boardRequestDto) {
