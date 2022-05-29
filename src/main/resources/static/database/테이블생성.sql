@@ -10,7 +10,7 @@ CREATE TABLE `board` (
   `update_time` datetime DEFAULT NULL COMMENT '수정일',
   `is_notice` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8 COMMENT='게시판';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='게시판';
 
 
 -- helpdesk.board_file definition
@@ -62,7 +62,7 @@ CREATE TABLE `driver` (
   `register_time` datetime DEFAULT NULL COMMENT '등록일',
   `update_time` datetime DEFAULT NULL COMMENT '수정일',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8 COMMENT='장치드라이버';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='장치드라이버';
 
 
 -- helpdesk.menu_list definition
@@ -76,23 +76,7 @@ CREATE TABLE `menu_list` (
   `menu_role` int(11) DEFAULT 0 COMMENT '메뉴권한',
   `menu_link` varchar(80) DEFAULT '/' COMMENT '메뉴링크',
   PRIMARY KEY (`menu_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 COMMENT='메뉴리스트';
-
-
--- helpdesk.tbl_board definition
-
-CREATE TABLE `tbl_board` (
-  `BGNO` bigint(20) DEFAULT NULL,
-  `BRDNO` int(11) NOT NULL AUTO_INCREMENT,
-  `BRDTITLE` varchar(255) DEFAULT NULL,
-  `BRDWRITER` varchar(20) DEFAULT NULL,
-  `BRDMEMO` varchar(4000) DEFAULT NULL,
-  `BRDDATE` datetime DEFAULT NULL,
-  `BRDHIT` int(11) DEFAULT NULL,
-  `BRDDELETEFLAG` char(1) DEFAULT NULL,
-  PRIMARY KEY (`BRDNO`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
-
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='메뉴리스트';
 
 -- helpdesk.`user` definition
 
@@ -112,7 +96,7 @@ CREATE TABLE `user` (
   `encpwd` varchar(80) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `bank_id` (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COMMENT='사용자';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='사용자';
 
 
 -- helpdesk.tag_list definition
@@ -124,4 +108,4 @@ CREATE TABLE `tag_list` (
   PRIMARY KEY (`tag_id`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `tag_list_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `category_list` (`category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COMMENT='태그항목';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='태그항목';
