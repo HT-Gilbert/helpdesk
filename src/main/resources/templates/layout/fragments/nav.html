@@ -20,7 +20,7 @@
                 <a th:href="@{/#}" class="nav-link link-dark"  th:text="${navmenu.menuName}"></a>
                 <ul style="margin-left: 20px;">
                     <li th:each="submenu: ${menuList}" th:if="${navmenu.menuLv == submenu.menuUpperid}">
-                        <a th:href="@{/#}" th:text="${submenu.menuName}"></a>
+                        <a th:href="@{${submenu.menuLink}}" th:text="${submenu.menuName}"></a>
                     </li>
                 </ul>
 

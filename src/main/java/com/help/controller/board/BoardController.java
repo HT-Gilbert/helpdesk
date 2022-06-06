@@ -28,14 +28,19 @@ public class BoardController {
 			model.addAttribute("resultMap", boardService.findAll(page, size));
 			model.addAttribute("menuList", menuService.getMenu());
 		} catch (Exception e) {
-			throw new Exception(e.getMessage()); 
+			
 		}
 		
 		return "/board/list";
 	}
 	
 	@GetMapping("/board/write")
-	public String getBoardWritePage(Model model, BoardRequestDto boardRequestDto) {
+	public String getBoardWritePage(Model model, BoardRequestDto boardRequestDto) throws Exception {
+		try {
+			model.addAttribute("menuList", menuService.getMenu());
+		} catch (Exception e) {
+			throw new Exception(e.getMessage()); 		
+		}
 		return "/board/write";
 	}
 	
@@ -45,6 +50,7 @@ public class BoardController {
 		try {
 			if (boardRequestDto.getId() != null) {
 				model.addAttribute("resultMap", boardService.findById(boardRequestDto.getId()));
+				model.addAttribute("menuList", menuService.getMenu());
 			}
 		} catch (Exception e) {
 			throw new Exception(e.getMessage()); 
