@@ -13,19 +13,22 @@
                     공지사항
                 </a>
             </li>
-            <hr>
-            
+            <!-- 권한이 999인 메뉴들은 로그인했을때만 보여준다-->
             <th:block th:each="navmenu: ${menuList}" th:if="${navmenu.menuUpperid == 10}">
             <li>
-                <a th:href="@{/#}" class="nav-link link-dark"  th:text="${navmenu.menuName}"></a>
-                <ul style="margin-left: 20px;">
-                    <li th:each="submenu: ${menuList}" th:if="${navmenu.menuLv == submenu.menuUpperid}">
+                <hr th:if="${navmenu.menuRole == 999}" sec:authorize="isAuthenticated()">
+                <hr th:unless="${navmenu.menuRole == 999}">
+                <a th:href="@{/#}" class="nav-link link-dark" th:if="${navmenu.menuRole == 999}" sec:authorize="isAuthenticated()" th:text="${navmenu.menuName}"></a>
+                <a th:href="@{/#}" class="nav-link link-dark" th:unless="${navmenu.menuRole == 999}" th:text="${navmenu.menuName}"></a>
+                <ul style="margin-left: 20px;" th:each="submenu: ${menuList}" th:if="${navmenu.menuLv == submenu.menuUpperid}">
+                    <li th:if="${submenu.menuRole == 999}" sec:authorize="isAuthenticated()">
+                        <a th:href="@{${submenu.menuLink}}" th:text="${submenu.menuName}"></a>
+                    </li>
+                    <li th:unless="${submenu.menuRole == 999}">
                         <a th:href="@{${submenu.menuLink}}" th:text="${submenu.menuName}"></a>
                     </li>
                 </ul>
-
             </li>
-            <hr>
             </th:block>
             <!-- 
             <th:block th:each="navmenu: ${menuList}">

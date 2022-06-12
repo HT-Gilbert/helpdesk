@@ -29,13 +29,18 @@ public class BoardFileService {
 	public BoardFileResponseDto findById(Long id) throws Exception {
 		return new BoardFileResponseDto(boardFileRepository.findById(id).get());
 	}
-	
-	public List<Long> findByBoardId(Long boardId) throws Exception {
+
+	public List<BoardFile> findByBoardId(Long boardId) throws Exception {
 		return boardFileRepository.findByBoardId(boardId);
 	}
 	
-	public boolean uploadFile(MultipartHttpServletRequest multiRequest, Long boardId) throws Exception {
+	//public List<Long> findByBoardId(Long boardId) throws Exception {
+	//	return boardFileRepository.findByBoardId(boardId);
+	//}
+	
+	public boolean uploadFile(MultipartHttpServletRequest multiRequest, Long boardId, int menuId) throws Exception {
 		
+		// menuId (0 : 공지사항, 12 : OA, 13 : 업무, 14 : 드라이버, 15: 프린터)
 		if (boardId == null) throw new NullPointerException("Empty BOARD_ID.");
 		
 		// 파라미터 이름을 키로 파라미터에 해당하는 파일 정보를 값으로 하는 Map을 가져온다.
@@ -114,6 +119,7 @@ public class BoardFileService {
 				
 				BoardFile boardFile = BoardFile.builder()
 						.boardId(boardId)
+						.menuId(menuId)
 						.origFileName(realFileName)
 						.saveFileName(saveFileName)
 						.fileSize(fileSize)

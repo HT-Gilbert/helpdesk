@@ -12,9 +12,9 @@
 				</div>
 				<div class="col-md-10">
 				<!-- <div class="container">  -->
-					<form action="/board/driver" id="frm" method="get">	
+					<form action="/board/oa" id="frm" method="get">	
 						<h4>
-							장치드라이버
+							OA프로그램(준비중...)
 						</h4>					
 						<hr>
 						<table>
@@ -33,7 +33,8 @@
 										<span th:text="${resultMap.totalCnt}"></span>건
 										<span th:text="${resultMap.curPage + 1}"></span>페이지
 									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-danger" onclick="fnDelete()">삭제</button>
-									<button th:align="right" type="button" class="btn btn-primary" onclick="javascript:location.href='/board/driver/write'">글쓰기</button>
+									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/driver/write}'|">글쓰기</button>
+									                                                               
 									</ul>
 								</div>
 								<thead class="thead-strong">
@@ -51,8 +52,12 @@
 									<tr th:each="driverList,index : ${resultMap.driverList}" th:with="paging=${resultMap.paging}">
 										<td sec:authorize="hasRole('ROLE_ADMIN')">
 											<input type="checkbox" name="deleteId" th:value="${driverList.id}">
-										</td>										
-										<td th:align="center" th:text="${driverList.id}"></td>
+										</td>									
+										<!-- 공지글이면 '공지'로 표시-->
+										<td th:align="center" style="font-weight:bold; color: blue" th:if="${driverList.isNotice}" th:utext="공지"></td>
+										<td th:align="center" th:unless="${driverList.isNotice}" th:text="${(resultMap.totalCnt - index.index) - (paging.pageNumber * paging.pageSize)}"></td>	
+
+										<!--<td th:align="center" th:text="${driverList.id}"></td> -->
 										<td><button type="button" class="btn btn-success m-1" data-bs-toggle="tooltip" data-bs-placement="left" title="Tooltip on left" th:text="${driverList.tag}"></button></td><td th:align="left"><a th:href="@{view(id=${driverList.id})}">[[${driverList.title}]]</a></td>
 										<td th:align="center" th:text="${driverList.registerId}"></td>
 										<td th:align="center" th:text="${driverList.readCnt}"></td>
@@ -64,7 +69,7 @@
 								<div class="col">
 									<ul class="pagination">
 										<li class="page-item" th:each="index : ${#numbers.sequence(1, resultMap.totalPage)}" th:with="paging=${resultMap.paging}">
-											<a class="page-link" th:classappend="${paging.pageNumber ==  (index-1)} ? bg-primary : bg-secondary" th:href="@{./driver(page=${index - 1},page=${paging.pageSize})}">
+											<a class="page-link" th:classappend="${paging.pageNumber ==  (index-1)} ? bg-primary : bg-secondary" th:href="@{./list(page=${index - 1},page=${paging.pageSize})}">
 												<span class="text-white" th:text="${index}"></span>
 											</a>											
 										</li>										

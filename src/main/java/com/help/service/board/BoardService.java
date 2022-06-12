@@ -34,8 +34,9 @@ public class BoardService {
 		
 		boolean resultFlag = false;
 		
+		// menuId 0 = 공지사항
 		if (result != null) {
-			boardFileService.uploadFile(multiRequest, result.getId());
+			boardFileService.uploadFile(multiRequest, result.getId(), 0);
 			resultFlag = true;
 		}
 		
@@ -88,6 +89,7 @@ return this.todoRepository.findAll(sort);
 		
 		BoardResponseDto info = new BoardResponseDto(boardRepository.findById(id).get());
 		
+	
 		resultMap.put("info", info);
 		resultMap.put("fileList", boardFileService.findByBoardId(info.getId()));
 		
@@ -101,7 +103,7 @@ return this.todoRepository.findAll(sort);
 		boolean resultFlag = false;
 		
 		if (result > 0) {
-			boardFileService.uploadFile(multiRequest, boardRequestDto.getId());
+			boardFileService.uploadFile(multiRequest, boardRequestDto.getId(), 0);
 			resultFlag = true;
 		}
 		

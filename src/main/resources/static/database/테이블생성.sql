@@ -18,6 +18,7 @@ CREATE TABLE `board` (
 CREATE TABLE `board_file` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'PK',
   `board_id` bigint(20) NOT NULL COMMENT '게시글 번호',
+  `menu_id` int(20) NOT NULL COMMENT '게시판 종류',
   `orig_file_name` varchar(250) DEFAULT NULL COMMENT '파일원본이름',
   `save_file_name` varchar(250) DEFAULT NULL COMMENT '파일이름',
   `file_size` int(11) DEFAULT 0 COMMENT '파일크기',

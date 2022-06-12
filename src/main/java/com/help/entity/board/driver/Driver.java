@@ -24,14 +24,16 @@ public class Driver extends  BaseTimeEntity {
     private String tag;
 	private int readCnt;
 	private String registerId;
+	private boolean isNotice;
 		
-		@Builder
-	public Driver(Long id, String title, String content, String tag, int readCnt, String registerId) {
+	@Builder
+	public Driver(Long id, String title, String content, String tag, int readCnt, String registerId, boolean isNotice) {
 		this.id = id; 
 		this.title = title;
 		this.content = content;
         this.tag = tag;
 		this.readCnt = readCnt;
 		this.registerId = registerId;
+		this.isNotice =  isNotice;
 	}
 }

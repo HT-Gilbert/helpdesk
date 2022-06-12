@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface BoardFileRepository extends JpaRepository<BoardFile, Long> {
 	
-	static final String SELECT_FILE_ID= "SELECT ID FROM board_file "
+	static final String SELECT_FILE_ID= "SELECT * FROM board_file "
 			+ "WHERE BOARD_ID = :boardId AND DELETE_YN != 'Y'";
 	
 	static final String UPDATE_DELETE_YN= "UPDATE board_file "
@@ -22,7 +22,7 @@ public interface BoardFileRepository extends JpaRepository<BoardFile, Long> {
 			+ "WHERE BOARD_ID IN (:boardIdList)";
 	
 	@Query(value = SELECT_FILE_ID, nativeQuery = true)
-	public List<Long> findByBoardId(@Param("boardId") Long boardId);
+	public List<BoardFile> findByBoardId(@Param("boardId") Long boardId);
 	
 	@Transactional
 	@Modifying

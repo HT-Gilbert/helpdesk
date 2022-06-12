@@ -16,6 +16,7 @@ public class DriverRequestDto {
     private String tag;
 	private int readCnt;
 	private String registerId;
+	private boolean isNotice;
 
     public Driver toEntity() {
 		return Driver.builder()
@@ -23,11 +24,12 @@ public class DriverRequestDto {
 			.content(content)
 			.registerId(registerId)
 			.tag(tag)
+			.isNotice(isNotice)
 			.build();
 	}
 
 	@Override
 	public String toString() {
-		return "BoardRequestDto [id=" + id + ", title=" + title + ", content=" + content + ", tag=" + tag + "]";
+		return "BoardRequestDto [id=" + id + ", title=" + title + ", content=" + content + ", tag=" + tag + ", isNotice=" + isNotice + "]";
 	} 
 }

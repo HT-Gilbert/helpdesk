@@ -16,6 +16,7 @@ public class DriverResponseDto {
 	private int readCnt;
 	private String registerId;
     private LocalDateTime registerTime;
+    private boolean isNotice = false;
 
     public DriverResponseDto(Driver entity){
         this.id = entity.getId();
@@ -25,12 +26,13 @@ public class DriverResponseDto {
         this.readCnt = entity.getReadCnt();
         this.registerId = entity.getRegisterId();
         this.registerTime = entity.getRegisterTime();       
+        this.isNotice = entity.isNotice();
     }
 
     @Override
     public String toString() {
         return "DriverResponseDto [id=" + id + ", title="  + title + ", content="  + content + ", tag="  + tag
-               + ", readCnt="  + readCnt + ", registerId="  + registerId + ", registerTime= " + registerTime + "]";
+               + ", readCnt="  + readCnt + ", registerId="  + registerId + ", registerTime= " + registerTime + ", isNotice=" + isNotice + "]";
     }
  
     public String getRegisterTime() {

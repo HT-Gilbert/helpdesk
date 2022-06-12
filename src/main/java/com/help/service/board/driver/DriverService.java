@@ -17,7 +17,7 @@ import com.help.dto.board.driver.DriverRequestDto;
 import com.help.dto.board.driver.DriverResponseDto;
 import com.help.entity.board.driver.Driver;
 import com.help.entity.board.driver.DriverRepository;
-
+import com.help.service.board.BoardFileService;
 import lombok.RequiredArgsConstructor;
  
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class DriverService {
 
     private final DriverRepository driverRepository;
+    private final BoardFileService boardFileService;
 
     @Transactional
     public boolean save(DriverRequestDto driverRequestDto, MultipartHttpServletRequest multiRequest) throws Exception{
@@ -33,12 +34,11 @@ public class DriverService {
 
         boolean resultFlag = false;
 
-        if(result != null){
-            // 파일저장 구현하기
-            //driver
-            resultFlag = true;
-        }
 
+        if (result != null) {
+			boardFileService.uploadFile(multiRequest, result.getId(), 14);
+			resultFlag = true;
+		}
 
         return resultFlag;
     }
@@ -49,7 +49,8 @@ public class DriverService {
         HashMap<String, Object> resultMap = new HashMap<String, Object>();
 
         List<Order> sortList = new LinkedList<>();
-        sortList.add(Order.desc("id"));
+        sortList.add(Order.desc("isNotice"));
+		sortList.add(Order.desc("registerTime"));
         Sort sort = Sort.by(sortList);
 
         Page<Driver> driverList = driverRepository.findAll(PageRequest.of(page, size, sort));
@@ -72,19 +73,33 @@ public class DriverService {
 		DriverResponseDto info = new DriverResponseDto(driverRepository.findById(id).get());
 		
 		resultMap.put("info", info);
-		//resultMap.put("fileList", boardFileService.findByBoardId(info.getId()));
+		resultMap.put("fileList", boardFileService.findByBoardId(info.getId()));
 		
 		return resultMap;
 	}
 
+    public boolean updateDriver(DriverRequestDto driverRequestDto, MultipartHttpServletRequest multiRequest) throws Exception {
+		
+		int result = driverRepository.updateDriver(driverRequestDto);
+		
+		boolean resultFlag = false;
+		
+		if (result > 0) {
+			boardFileService.uploadFile(multiRequest, driverRequestDto.getId(), 14);
+			resultFlag = true;
+		}
+		
+		return resultFlag;
+	}
+
     public void deleteById(Long id) throws Exception {
 		Long[] idArr = {id};
-		//boardFileService.deleteBoardFileYn(idArr);
+		boardFileService.deleteBoardFileYn(idArr);
 		driverRepository.deleteById(id);
 	}
 	
 	public void deleteAll(Long[] deleteIdList) throws Exception {
-		//boardFileService.deleteBoardFileYn(deleteIdList);
+		boardFileService.deleteBoardFileYn(deleteIdList);
 		driverRepository.deleteDriver(deleteIdList);
 	}    
 }

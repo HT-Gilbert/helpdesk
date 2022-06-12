@@ -10,25 +10,39 @@
 					<th:block th:replace="/layout/fragments/nav :: sidebarFragment"></th:block>
 				</div>
 				<div class="col-md-10">
-					<h1>Driver Register.</h1>
+					<h1>장치드라이버</h1>
 					<form id="frm" action="/board/driver/write/action" method="post" enctype="multipart/form-data">
 						<div class="mb-3">
-							<label class="form-label font-weight-bold"><span class="text-danger">* </span>Title.</label>
+							<label class="form-label font-weight-bold"><span class="text-danger">* </span>제목</label>
 							<input type="text" class="form-control" name="title" required >
+							<div class="form-check">
+								<input id="notice" type="checkbox" class="form-check-input" name="notice" />
+								<label for="notice" class="form-check-label">공지</label>
+						   </div>
 						</div>
 						<div class="mb-3">
-							<label class="form-label font-weight-bold"><span class="text-danger">* </span>Content.</label>
+							<label class="form-label font-weight-bold"><span class="text-danger">* </span>내용</label>
 							<textarea class="form-control" rows="5" name="content" required ></textarea>
 						</div>
 						<div class="mb-3">
-							<label class="form-label font-weight-bold"><span class="text-danger">* </span>Writer.</label>
-							<input type="hidden" name="ibx_TotalPurAplAmt" value="0"/>
-							<!-- <input type="text" class="form-control" name="registerId" required > -->
+							<label class="form-label font-weight-bold"><span class="text-danger">* </span>카테고리</label>
+							<!-- <input type="text" class="form-control" name="tag" readonly th:value="${#authentication.name}"> -->
+							<select class="select_type01 w170" name="tag">
+								<option value="선택"> 선택 </option>
+								<option th:each="tag, index : ${tagList}"
+										th:if="${tag.categoryId == 3}"
+										th:value="${tag.tagName}"
+										th:utext="${tag.tagName}"></option>
+							</select>
 						</div>
 						<div class="mb-3">
-							<label class="form-label font-weight-bold">File Upload.</label>
+							<label class="form-label font-weight-bold"><span class="text-danger">* </span>작성자</label>
+							<input type="text" class="form-control" name="registerId" readonly th:value="${#authentication.name}">
+						</div>
+						<div class="mb-3">
+							<label class="form-label font-weight-bold">파일업로드</label>
 							<div id="fileDiv">
-								<div class="custom-file mt-1">
+								<div class="custom-file mt-1" style="width: 50%">
 									<input type="file" class="custom-file-input" id="customFile" name="customFile" onchange="fnChngFile(this);">
 									<label class="custom-file-label" for="customFile">Choose file</label>
 								</div>
@@ -39,13 +53,9 @@
 							</div>
 						</div>
 						<div class="mt-5">
-							<button type="button" class="btn btn-success" onclick="javascript:location.href='/board/list'">Previous</button>
-							<button type="button" class="btn btn-primary" onclick="fnSubmit();">Submit</button>
-						</div>
-						<div class="form-check">
-							 <input id="notice" type="checkbox" class="form-check-input" name="notice" />
-							 <label for="notice" class="form-check-label">공지</label>
-						</div>
+							<button type="button" class="btn btn-success" th:onclick="|location.href='@{/board/driver/list}'|">이전</button>
+							<button type="button" class="btn btn-primary" onclick="fnSubmit();">등록</button>
+						</div>						
 					</form>
 				</div>
 			</div>
@@ -89,10 +99,12 @@
 				let fileExt	= fileVal.substring(fileVal.lastIndexOf(".") + 1, fileVal.length); 
 				let flag = true;
 				
-				if (fileAllowExt.indexOf(fileExt.toLowerCase()) < 0) {
-					alert("It is not a registrable extension.");
-				} else if(fileSize > fileMaxSize) {
-					alert("Attachments can be registered up to 10MB.");
+				//if (fileAllowExt.indexOf(fileExt.toLowerCase()) < 0) {
+				//	alert("It is not a registrable extension.");
+				//} else 
+				
+				if(fileSize > fileMaxSize) {
+					alert("Attachments can be registered up to 50MB.");
 				} else {
 					flag = false;
 					$(obj).next("label").text(fileVal);
