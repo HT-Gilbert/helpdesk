@@ -46,7 +46,12 @@ public class MemberService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         
 		Member member = memberRepository.findByUsername(username);
-
+        
+        logger.trace("Trace Level 테스트");
+        logger.debug("DEBUG Level 테스트");
+        logger.info("INFO Level 테스트");
+        logger.warn("Warn Level 테스트");
+        logger.error("ERROR Level 테스트");
         
         /*
         Member activeUser = (Member)SecurityContextHolder.getContext().getAuthentication().getPrincipal();

@@ -28,7 +28,7 @@ CREATE TABLE `board_file` (
   `register_time` datetime DEFAULT NULL COMMENT '작성일',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `board_id` (`board_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='게시판파일관리';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='게시판파일관리';
 
 
 -- helpdesk.category_list definition
@@ -62,6 +62,7 @@ CREATE TABLE `driver` (
   `register_id` varchar(100) NOT NULL COMMENT '작성자',
   `register_time` datetime DEFAULT NULL COMMENT '등록일',
   `update_time` datetime DEFAULT NULL COMMENT '수정일',
+  `is_notice` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='장치드라이버';
 
@@ -99,7 +100,7 @@ CREATE TABLE `user` (
   UNIQUE KEY `bank_id` (`userid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='사용자';
 
-
+ 
 -- helpdesk.tag_list definition
 
 CREATE TABLE `tag_list` (

@@ -13,6 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     	return new MappingJackson2JsonView();
     }
 
+    /*
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
@@ -20,4 +21,5 @@ public class WebConfig implements WebMvcConfigurer {
         multipartResolver.setMaxUploadSizePerFile(50 * 1024 * 1024); // 파일당 업로드 크기 제한 (50MB)
         return multipartResolver;
     }
+     */
 }

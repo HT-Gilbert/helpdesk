@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="true">
+<configuration debug="true" scan="true" scanPeriod="60 seconds">
+
+	<!--springProfile 태그를 사용하면 logback 설정파일에서 복수개의 프로파일을 설정할 수 있다.-->
+    <springProfile name="local">
+        <property resource="logback-local.properties"/>
+    </springProfile>
+    <springProfile name="dev">
+        <property resource="logback-dev.properties"/>
+    </springProfile>
+    <!--Environment 내의 프로퍼티들을 개별적으로 설정할 수도 있다.-->
+    <springProperty scope="context" name="LOG_LEVEL" source="logging.level.root"/>
+
+	<!-- pattern -->
+    <property name="LOG_PATTERN" value="%-5level %d{yy-MM-dd HH:mm:ss}[%thread] [%logger{0}:%line] - %msg%n"/>
 
 	<!-- Appenders -->
-	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<Pattern>%d %5p [%c] %m%n</Pattern>
-		</encoder>
-	</appender>
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
 
 	<appender name="console-infolog" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -15,12 +28,17 @@
 	</appender>
 
 	<!-- Logger -->
-	<logger name="com.board" level="DEBUG" appender-ref="console" />
-	<logger name="jdbc.sqlonly" level="INFO" appender-ref="console-infolog" />
-	<logger name="jdbc.resultsettable" level="INFO" appender-ref="console-infolog" />
+	<logger name="com.board" level="info" appender-ref="console" />
+	<!-- <logger name="jdbc.sqlonly" level="INFO" appender-ref="console-infolog" /> -->
+	<!-- <logger name="jdbc.sqltiming" level="INFO" appender-ref="console-infolog" /> -->
 
 	<!-- Root Logger -->
-	<root level="off">
-		<appender-ref ref="console" />
+	<root level="${LOG_LEVEL}">
+		<appender-ref ref="CONSOLE" />
 	</root>
+
+	<!-- JDBC 로그설정 -->
+	<!-- SQL문과 해당 SQL을 실행시키는데 수행된 시간 정보(milliseconds)를 포함한다. -->	
+	<logger name="jdbc.sqltiming" level="info"/>
+
 </configuration>
