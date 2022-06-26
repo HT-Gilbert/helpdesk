@@ -78,8 +78,8 @@
                                     <ul class="nav nav-pills" >
                                         <li class="nav-item" th:each="topmenu: ${menuList}">
                                         <a th:href="@{${topmenu.menuLink}}" class="nav-link px-2 text-white" th:if="${topmenu.menuName == '로그인' and topmenu.menuRole == 999}" sec:authorize="isAnonymous()" th:text="${topmenu.menuName}">[[${topmenu.menuName}]]  </a>
-                                        <a th:href="@{/logout}" class="nav-link px-2 text-white" th:if="${topmenu.menuName == '로그아웃'and topmenu.menuRole == 999}" sec:authorize="isAuthenticated()" th:text="${topmenu.menuName}">  </a>
-                                        <a th:href="@{/admin}" class="nav-link px-2 text-white" th:if="${topmenu.menuName == '관리자'and topmenu.menuRole == 999}" sec:authorize="hasRole('ROLE_ADMIN')" th:text="${topmenu.menuName}">  </a>
+                                        <a th:href="@{${topmenu.menuLink}}" class="nav-link px-2 text-white" th:if="${topmenu.menuName == '로그아웃'and topmenu.menuRole == 999}" sec:authorize="isAuthenticated()" th:text="${topmenu.menuName}">  </a>
+                                        <a th:href="@{${topmenu.menuLink}}" class="nav-link px-2 text-white" th:if="${topmenu.menuName == '관리자'and topmenu.menuRole == 999}" sec:authorize="hasRole('ROLE_ADMIN')" th:text="${topmenu.menuName}">  </a>
                                         <a th:href="@{/#}" class="nav-link px-2 text-white" th:if="${topmenu.menuUpperid == 0 and topmenu.menuRole == 0}" th:text="${topmenu.menuName}">  </a>
                                         </li>
                                         <!-- 

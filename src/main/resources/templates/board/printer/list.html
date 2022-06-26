@@ -14,7 +14,7 @@
 				<!-- <div class="container">  -->
 					<form action="/board/printer" id="frm" method="get">	
 						<h4>
-							프린터/복합기(준비중...)
+							프린터/복합기
 						</h4>					
 						<hr>
 						<table>
@@ -33,7 +33,7 @@
 										<span th:text="${resultMap.totalCnt}"></span>건
 										<span th:text="${resultMap.curPage + 1}"></span>페이지
 									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-danger" onclick="fnDelete()">삭제</button>
-									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/driver/write}'|">글쓰기</button>
+									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/printer/write}'|">글쓰기</button>
 									                                                               
 									</ul>
 								</div>
@@ -49,19 +49,19 @@
 									</tr>
 								</thead>
 								<tbody id="tbody">
-									<tr th:each="driverList,index : ${resultMap.driverList}" th:with="paging=${resultMap.paging}">
+									<tr th:each="printerList,index : ${resultMap.printerList}" th:with="paging=${resultMap.paging}">
 										<td sec:authorize="hasRole('ROLE_ADMIN')">
-											<input type="checkbox" name="deleteId" th:value="${driverList.id}">
+											<input type="checkbox" name="deleteId" th:value="${printerList.id}">
 										</td>									
 										<!-- 공지글이면 '공지'로 표시-->
-										<td th:align="center" style="font-weight:bold; color: blue" th:if="${driverList.isNotice}" th:utext="공지"></td>
-										<td th:align="center" th:unless="${driverList.isNotice}" th:text="${(resultMap.totalCnt - index.index) - (paging.pageNumber * paging.pageSize)}"></td>	
+										<td th:align="center" style="font-weight:bold; color: blue" th:if="${printerList.isNotice}" th:utext="공지"></td>
+										<td th:align="center" th:unless="${printerList.isNotice}" th:text="${(resultMap.totalCnt - index.index) - (paging.pageNumber * paging.pageSize)}"></td>	
 
-										<!--<td th:align="center" th:text="${driverList.id}"></td> -->
-										<td><button type="button" class="btn btn-success m-1" data-bs-toggle="tooltip" data-bs-placement="left" title="Tooltip on left" th:text="${driverList.tag}"></button></td><td th:align="left"><a th:href="@{view(id=${driverList.id})}">[[${driverList.title}]]</a></td>
-										<td th:align="center" th:text="${driverList.registerId}"></td>
-										<td th:align="center" th:text="${driverList.readCnt}"></td>
-										<td th:align="center" th:text="${driverList.registerTime}"></td>
+										<!--<td th:align="center" th:text="${printerList.id}"></td> -->
+										<td><button type="button" class="btn btn-success m-1" data-bs-toggle="tooltip" data-bs-placement="left" title="Tooltip on left" th:text="${printerList.tag}"></button></td><td th:align="left"><a th:href="@{view(id=${printerList.id})}">[[${printerList.title}]]</a></td>
+										<td th:align="center" th:text="${printerList.registerId}"></td>
+										<td th:align="center" th:text="${printerList.readCnt}"></td>
+										<td th:align="center" th:text="${printerList.registerTime}"></td>
 									<tr>
 								</tbody>
 							</table>
@@ -109,7 +109,7 @@
 				if (delInpChkLen > 0) {
 					if (confirm("Do you want to delete it?")) {
 						let frm = $("#frm");
-						frm.attr("action","/board/driver/delete");
+						frm.attr("action","/board/printer/delete");
 						frm.attr("method","post");
 						frm.submit();
 					}

@@ -1,4 +1,4 @@
-package com.help.controller.board.driver;
+package com.help.controller.board.printer;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,26 +9,26 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.help.service.main.TagService;
 import com.help.service.main.MenuService;
-import com.help.service.board.driver.DriverService;
-import com.help.dto.board.driver.DriverRequestDto;
+import com.help.service.board.printer.PrinterService;
+import com.help.dto.board.printer.PrinterRequestDto;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Controller
-public class DriverController {
+public class PrinterController {
     
 	private final TagService tagService;
 	private final MenuService menuService;
-	private final DriverService driverService;
+	private final PrinterService printerService;
 
-    @GetMapping("/board/driver/list")
-	public String getDriverListPage(Model model
+    @GetMapping("/board/printer/list")
+	public String getPrinterListPage(Model model
 			, @RequestParam(required = false, defaultValue = "0") Integer page
 			, @RequestParam(required = false, defaultValue = "10") Integer size) throws Exception {
 		
 		try {
-			model.addAttribute("resultMap", driverService.findAll(page, size));
+			model.addAttribute("resultMap", printerService.findAll(page, size));
 			model.addAttribute("tagList", tagService.getTag());
 			//model.addAttribute("categoryList", categoryService.getCategory());
 			model.addAttribute("menuList", menuService.getMenu());
@@ -36,58 +36,58 @@ public class DriverController {
 			throw new Exception(e.getMessage()); 
 		}
 		
-		return "/board/driver/list";
+		return "/board/printer/list";
 	}
 
-    @GetMapping("/board/driver/write")
-	public String getDriverWritePage(Model model, DriverRequestDto driverRequestDto) throws Exception {
+    @GetMapping("/board/printer/write")
+	public String getPrinterWritePage(Model model, PrinterRequestDto printerRequestDto) throws Exception {
 		try {
 			model.addAttribute("menuList", menuService.getMenu());
 			model.addAttribute("tagList", tagService.getTag());
 		} catch (Exception e) {
 			throw new Exception(e.getMessage()); 		
 		}
-		return "/board/driver/write";
+		return "/board/printer/write";
 	}
 
-	@GetMapping("/board/driver/view")
-	public String getDriverViewPage(Model model, DriverRequestDto driverRequestDto) throws Exception {
+	@GetMapping("/board/printer/view")
+	public String getPrinterViewPage(Model model, PrinterRequestDto printerRequestDto) throws Exception {
 		
 		try {
-			if (driverRequestDto.getId() != null) {
-				model.addAttribute("resultMap", driverService.findById(driverRequestDto.getId()));
+			if (printerRequestDto.getId() != null) {
+				model.addAttribute("resultMap", printerService.findById(printerRequestDto.getId()));
 				model.addAttribute("menuList", menuService.getMenu());
 			}
 		} catch (Exception e) {
 			throw new Exception(e.getMessage()); 
 		}
 		
-		return "/board/driver/view";
+		return "/board/printer/view";
 	}
 
-	@PostMapping("/board/driver/write/action")
-	public String driverWriteAction(Model model, DriverRequestDto driverRequestDto, MultipartHttpServletRequest multiRequest) throws Exception {
+	@PostMapping("/board/printer/write/action")
+	public String printerWriteAction(Model model, PrinterRequestDto printerRequestDto, MultipartHttpServletRequest multiRequest) throws Exception {
 		
 		try {
-			if (!driverService.save(driverRequestDto, multiRequest)) {
+			if (!printerService.save(printerRequestDto, multiRequest)) {
 				throw new Exception("#Exception boardWriteAction!");
 			}
 		} catch (Exception e) {
 			throw new Exception(e.getMessage()); 
 		}
 		
-		return "redirect:/board/driver/list";
+		return "redirect:/board/printer/list";
 	}
 
-	@PostMapping("/board/driver/delete")
-	public String driverDeleteAction(Model model, @RequestParam() Long[] deleteId) throws Exception {
+	@PostMapping("/board/printer/delete")
+	public String printerDeleteAction(Model model, @RequestParam() Long[] deleteId) throws Exception {
 		
 		try {
-			driverService.deleteAll(deleteId);
+			printerService.deleteAll(deleteId);
 		} catch (Exception e) {
 			throw new Exception(e.getMessage()); 
 		}
 		
-		return "redirect:/board/driver";
+		return "redirect:/board/printer";
 	}
 }

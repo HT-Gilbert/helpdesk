@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     	return new MappingJackson2JsonView();
     }
 
-    /*
+    /* application.properties 에서 설정함
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
