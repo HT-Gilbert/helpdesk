@@ -111,3 +111,18 @@ CREATE TABLE `tag_list` (
   KEY `category_id` (`category_id`),
   CONSTRAINT `tag_list_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `category_list` (`category_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='태그항목';
+
+-- helpdesk.printer definition
+
+CREATE TABLE `printer` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'PK',
+  `title` varchar(200) NOT NULL COMMENT '제목',
+  `content` text NOT NULL COMMENT '내용',
+  `tag` varchar(100) NOT NULL COMMENT '태그',
+  `read_cnt` int(11) NOT NULL DEFAULT 0 COMMENT '조회수',
+  `register_id` varchar(100) NOT NULL COMMENT '작성자',
+  `register_time` datetime DEFAULT NULL COMMENT '등록일',
+  `update_time` datetime DEFAULT NULL COMMENT '수정일',
+  `is_notice` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='프린터/복합기드라이버';
