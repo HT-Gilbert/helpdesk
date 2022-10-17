@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.help.admin.repository.BoardManageMapper">
+
+        <!-- board_list 테이블 전체 컬럼 -->
+        <sql id="postColumns">
+            board_id
+          , board_table
+          , board_title
+          , board_role
+          , board_search
+          , board_tag_list
+          , board_tag_use
+      </sql>
+
+      <sql id="postDtoColumns">
+        board_id
+      , board_table
+      , board_title
+      , board_role
+      , board_search
+  </sql>
+
+    <select id="existTableName" resultType="Integer">
+        SELECT count(TABLE_NAME) 
+        FROM 
+        INFORMATION_SCHEMA.TABLES 
+        where 
+        TABLE_SCHEMA = #{databaseName, jdbcType=VARCHAR}
+        AND
+        TABLE_NAME=#{tableName, jdbcType=VARCHAR}
+    </select>
+
+    <select id="getTableNameOne" resultType="String">
+        SELECT board_table
+        FROM 
+        board_list
+        <where>
+            <if test="boardId != null and boardId != ''">
+                and board_id = #{boardId}
+            </if>
+            <if test="boardTitle != null and boardTitle != ''">
+                and board_title = #{boardTitle}
+            </if>
+        
+        
+        </where>
+    </select>
+
+    <select id="getTableIdOne" resultType="Integer">
+        SELECT board_Id
+        FROM 
+        board_list
+        <where>
+            <if test="boardTable != null and boardTable != ''">
+                and board_table = #{boardTable}
+            </if>
+        </where>
+    </select>
+
+    <select id="getTableTitleOne" resultType="String">
+        SELECT board_title
+        FROM 
+        board_list
+        <where>
+            <if test="boardTable != null and boardTable != ''">
+                and board_table = #{boardTable}
+            </if>
+        </where>
+    </select>
+
+    <select id="getTableName" resultType="String">
+        SELECT board_table
+        FROM 
+        board_list
+        where 
+        board_id IN
+        <foreach collection="deleteIdList" item="boardId"  open="(" close=")" separator=",">
+			#{boardId.value}
+		</foreach>
+    </select>
+
+    <select id="getTableTitle" resultType="String">
+        SELECT board_title
+        FROM 
+        board_list
+        where 
+        board_id IN
+        <foreach collection="deleteIdList" item="boardId"  open="(" close=")" separator=",">
+			#{boardId.value}
+		</foreach>
+    </select>
+
+    <select id="searchBoardListFindOne" resultType="com.help.admin.dto.BoardListDto">
+        SELECT
+        <include refid="postDtoColumns" />
+        FROM
+            board_list
+        WHERE 
+            board_table = #{boardTable}
+ 	</select>
+    
+    <select id="searchBoardListFindAll" resultType="com.help.admin.dto.BoardListDto">
+        SELECT
+        <include refid="postDtoColumns" />
+        FROM
+            board_list
+        WHERE board_search = true
+                AND board_role IN 
+                <foreach collection="list" item="role"  open="(" close=")" separator=",">
+                    #{role}
+                </foreach>
+        ORDER BY board_id
+ 	</select>
+
+    <select id="findAll" resultType="com.help.admin.dto.BoardListDto">
+        select 
+        <include refid="postColumns" />
+         from 
+            board_list
+	</select>
+
+    <update id="createBoardTable1" parameterType="com.help.admin.dto.BoardListDto" statementType="STATEMENT" >
+
+        CREATE TABLE ${boardTable} (
+            `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'PK',
+            `title` varchar(200) NOT NULL COMMENT '제목',
+            `content` text NOT NULL COMMENT '내용',
+            `read_cnt` int(11) NOT NULL DEFAULT 0 COMMENT '조회수',
+            `register_id` varchar(100) NOT NULL COMMENT '작성자',
+            `register_time` datetime DEFAULT NULL COMMENT '작성일',
+            `update_time` datetime DEFAULT NULL COMMENT '수정일',
+            `is_notice` tinyint(1) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+          ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT= '${boardTitle}'
+    </update>
+    <!-- board_list 에 게시판 추가-->
+    <insert id="insertBoardManageList" parameterType="com.help.admin.dto.BoardListDto" useGeneratedKeys="true" keyProperty="boardId">
+        insert into board_list (board_table, board_title, 
+        board_role, board_search, board_tag_list, board_tag_use) values (
+        #{boardTable}, 
+        #{boardTitle}, 
+        #{boardRole}, 
+        #{boardSearch},
+        #{boardTagList},
+        #{boardTagUse}
+        )
+    </insert>
+
+    <delete id="deleteBoardList" parameterType="hashmap">
+        DELETE FROM board_list 
+		WHERE board_id IN 
+		<foreach collection="deleteIdList" item="boardId"  open="(" close=")" separator=",">
+			#{boardId.value}
+		</foreach>
+    </delete>
+
+    <update id="dropTable" parameterType="list">
+        drop table 
+        <foreach collection="list" item="boardTable" separator=",">
+			${boardTable}
+		</foreach>
+    </update>
+
+     <!-- 게시글 저장 -->
+     <insert id="save" parameterType="com.help.admin.dto.BoardListDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tb_post (
+            <include refid="postColumns" />
+        ) VALUES (
+              #{id}
+            , #{title}
+            , #{content}
+            , #{writer}
+            , 0
+            , #{noticeYn}
+            , 0
+            , NOW()
+            , NULL
+        )
+    </insert>
+
+
+
+
+    <!-- 게시글 수정 -->
+    <update id="update" parameterType="com.help.admin.dto.BoardListDto">
+        UPDATE tb_post
+        SET
+              modified_date = NOW()
+            , title = #{title}
+            , content = #{content}
+            , writer = #{writer}
+            , notice_yn = #{noticeYn}
+        WHERE
+            id = #{id}
+    </update>
+
+
+    <!-- 게시글 삭제 -->
+    <delete id="deleteById" parameterType="long">
+        UPDATE tb_post
+        SET
+            delete_yn = 1
+        WHERE
+            id = #{id}
+    </delete>
+
+</mapper>

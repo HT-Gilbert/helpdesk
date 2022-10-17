@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/layout">
+   	<!-- layout Content -->
+	<th:block layout:fragment="content">
+		<!--<div id="wrapper">-->
+		<div class="container">
+			<hr>
+			<div class="row">
+				<div class="col-md-2">
+					<!-- NAV 영역 <th:block th:replace="/layout/fragments/nav :: sidebarFragment"></th:block>-->
+					<th:block th:replace="layout/fragments/nav :: sidebarFragment"></th:block>
+					
+				</div>
+				<div class="col-md-10">
+				<!-- <div class="container">  -->
+                    <h1>관리자 페이지</h1>
+					<form action="/admin/" id="frm" method="get">						
+                        <div>
+                                <i class="fa fa-folder-open" aria-hidden="true"></i>
+                                <a  th:href="@{/file/download}" class="view_file_download">
+                                    <strong>Test문구</strong> (123.1M)
+                                </a>
+                                <br>
+                                <span class="bo_v_file_cnt">1회 다운로드 | DATE : 2022-04-26</span>
+                         
+                                <button onclick="window.open('address','window_name','width=430,height=500,location=no,status=no,scrollbars=yes');">팝업테스트</button>
+                                <button th:onclick="window.open('addCategory','window_name','width=430,height=500,location=no,status=no,scrollbars=yes');">addCategory</button>
+                                <button th:onclick="|window.open('/popup', 'popup', 'width=300, height=300');|">팝업테스트</button>
+
+                                <button onclick="window.open('address')">새창테스트</button>
+                                <button th:onclick="window.open('addCategory')">thaddCategory</button>
+                                <button th:onclick="window.open('addContact')">thaddContact</button>
+
+                                <button th:onclick="|popUp('@{/admin/main}')}">popup</button>
+                                th:onclick="|location.href='@{/board/driver/list}'|"
+                            </div>
+                            <div>
+                                <video id="videoPlay" width="100%" height="100%" controls autoplay muted onclick="nwindow()"></video>
+                            <script>
+                            function nwindow(){
+                                window.open("/daily/ListPopup", "_blank", "toolbar=ues, menubar=yes, width=700, height=500").focus();
+                            }
+                            </script>
+                            </div>
+					</form>
+				</div>
+			</div>
+	    </div>
+	    <script th:inline="javascript">
+	    	// header checkbox event
+	    	$("#chkAll").click(function() {
+	    		if (this.checked) {
+	    			$("input[name='deleteId']").prop("checked", true);
+	    		} else {
+	    			$("input[name='deleteId']").prop("checked", false);
+	    		}
+	    	});
+	    	
+	    	// body checkbox event
+	    	$("input[name='deleteId']").click(function() {
+	    		let delInpLen = $("input[name='deleteId']").length;
+	    		let delInpChkLen = $("input[name='deleteId']:checked").length;
+	    		
+	    		if (delInpLen == delInpChkLen) {
+	    			$("#chkAll").prop("checked", true);
+	    		} else {
+	    			$("#chkAll").prop("checked", false);
+	    		}
+	    	});
+	    
+			function fnDelete() {
+				let delInpChkLen = $("input[name='deleteId']:checked").length;
+				
+				if (delInpChkLen > 0) {
+					if (confirm("Do you want to delete it?")) {
+						let frm = $("#frm");
+						frm.attr("action","/board/driver/delete");
+						frm.attr("method","post");
+						frm.submit();
+					}
+				} else {
+					alert("Not selected.");
+				}
+			}
+		</script>
+	</th:block>
+</html>

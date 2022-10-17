@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<!--
+	<nav th:fragment="pagination" aria-label="Page navigation" class="text-center">
+		</nav>
+-->
+	<nav th:fragment="pagination" th:if="${resultMap.paginationInfo != null and resultMap.paginationInfo.totalRecordCount > 0}" th:object="${resultMap.paginationInfo}" th:with="info=${resultMap.paginationInfo}" aria-label="Page navigation" class="text-center">
+		<ul class="pagination">
+			<!--
+			<li class="page-item" th:if="*{hasPreviousPage == true}" th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${resultMap.paginationInfo.makeQueryString(1)} ]])">
+				<a href="javascript:void(0)" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+			</li>
+			<li class="page-item" th:if="*{hasPreviousPage == true}" th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${resultMap.paginationInfo.makeQueryString(info.firstPage - 1)} ]])">
+				<a href="javascript:void(0)" aria-label="Previous"><span aria-hidden="true">&lsaquo;</span></a>
+			</li>
+			-->
+			<li class="page-item" th:if="*{hasPreviousPage == true}" th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${resultMap.paginationInfo.makeQueryString(1)} ]])">
+				<a class="page-link" th:style="'font-weight: bold; color: black;'" href="javascript:void(0)" >&lt;&lt;</a>
+			</li>
+			<li class="page-item" th:if="*{hasPreviousPage == true}" th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${resultMap.paginationInfo.makeQueryString(info.firstPage - 1)} ]])">
+				<a class="page-link" th:style="'font-weight: bold; color: black;'" href="javascript:void(0)" th:text="Previous" ></a>
+			</li>
+			
+			<li class="page-item" th:each="pageNo : *{#numbers.sequence( firstPage, lastPage )}" th:classappend="${(pageNo-1) == resultMap.paginationInfo.curPage} ? 'active'">
+				<a class="page-link" th:style="${(pageNo-1) == resultMap.paginationInfo.curPage} ? 'font-weight: bold; color: white;' : 'font-weight: bold; color: black;'" href="javascript:void(0)" th:text="${pageNo}" th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${resultMap.paginationInfo.makeQueryString(pageNo-1)} ]])"></a>
+				<!--<a class="page-link" th:style="'font-weight: bold; color: black;'" href="javascript:void(0)" th:text="${pageNo}" th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${resultMap.paginationInfo.makeQueryString(pageNo-1)} ]])"></a>-->
+			</li>
+			<li class="page-item" th:if="*{hasNextPage == true}" th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${resultMap.paginationInfo.makeQueryString(info.lastPage + 1)} ]])">
+				<a class="page-link" th:style="'font-weight: bold; color: black;'" href="javascript:void(0)" th:text="Next" ></a>
+			</li>
+			<li class="page-item" th:if="*{hasNextPage == true}" th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${resultMap.paginationInfo.makeQueryString(info.totalPageCount)} ]])">
+				<a class="page-link" th:style="'font-weight: bold; color: black;'" href="javascript:void(0)" >&gt;&gt;</a>
+			</li>
+			<!--
+			<li class="page-item" th:if="*{hasNextPage == true}" th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${resultMap.paginationInfo.makeQueryString(info.lastPage + 1)} ]])">
+				<a href="javascript:void(0)" aria-label="Next"><span aria-hidden="true">&rsaquo;</span></a>
+			</li>
+			<li class="page-item" th:if="*{hasNextPage == true}" th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${resultMap.paginationInfo.makeQueryString(info.totalPageCount)} ]])">
+				<a href="javascript:void(0)" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+			</li>
+			-->
+		</ul>
+	</nav>
+	
+	<div th:fragment="search" id="adv-search" class="input-group">
+		<input type="search" id="subSearchKeyword" class="form-control" onkeyup="document.getElementById('keyword').value = this.value;" placeholder="키워드를 입력해 주세요." />
+            <div class="input-group-btn">
+                <div class="btn-group" role="group">
+                    <div class="dropdown dropdown-lg">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
+                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                            <!--/* 검색 form */-->
+                            <form id="searchForm" class="form-horizontal" onsubmit="return false;" autocomplete="off">
+                                <div class="form-group">
+                                    <label for="searchType">검색 유형</label>
+									<select id="searchType" name="searchType" class="form-control">
+                                        <option value="">전체</option>
+                                        <option value="title">제목</option>
+                                        <option value="content">내용</option>
+                                        <option value="registerId">작성자</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="keyword">키워드</label>
+                                    <input type="search" id="keyword" name="searchKeyword" class="form-control" onkeyup="document.getElementById('subSearchKeyword').value = this.value;" placeholder="키워드를 입력해 주세요." />
+                                </div>
+                                <button type="button" onclick="movePage(1);" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                            </form>
+                        </ul>
+                    </div>
+                    <button type="button" onclick="movePage(1);" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+	</div>	
+</html>

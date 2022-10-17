@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.help.admin.repository.TagMapper">
+
+	<sql id="tagColumns">
+		  tag_id
+		, tag_name		  
+		, board_id
+	</sql>
+
+	<sql id="insertTagColumns">
+		tag_name		  
+		, board_id
+	</sql>
+
+	<insert id="insertTagList" parameterType="list">
+		INSERT INTO tag_list (
+			<include refid="insertTagColumns" />
+		) VALUES
+		<foreach collection="list" item="item" separator=",">
+		(
+			#{item.tagName}
+            , #{item.boardId}
+		)
+		</foreach>
+	</insert>
+
+	<select id="selectTagList" parameterType="String" resultType="com.help.admin.dto.TagDto">
+		SELECT
+			<include refid="tagColumns" />
+		FROM
+            tag_list
+		WHERE
+			board_id = #{boardId}
+	</select>
+
+	<delete id="deleteTagList" parameterType="hashmap">
+        DELETE FROM tag_list 
+		WHERE board_id IN 
+		<foreach collection="deleteIdList" item="boardId"  open="(" close=")" separator=",">
+			#{boardId.value}
+		</foreach>
+    </delete>
+</mapper>

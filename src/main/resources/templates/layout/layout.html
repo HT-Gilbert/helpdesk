@@ -2,31 +2,111 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
     <head><meta charset="UTF-8"/></head>
+    <!-- 공통 스크립트 <th:block th:replace="/layout/fragments/script :: scriptFragment"></th:block>-->
+    <th:block th:replace="layout/fragments/script :: scriptFragment"></th:block>
     
-    <!-- 공통 헤드-->
-    <th:block th:replace="/layout/fragments/head :: headFragment"></th:block>
+    
+    <!-- 공통 헤드 <th:block th:replace="/layout/fragments/head :: headFragment"></th:block>-->
+    <th:block th:replace="layout/fragments/head :: headFragment"></th:block>
 
     <body id="page-top">
         <div id="wrapper">
             <!-- 사이드바
-            <th:block th:replace="/layout/fragments/nav :: sidebarFragment"></th:block>
+            <th:block th:replace="layout/fragments/nav :: sidebarFragment"></th:block>
             -->
 
             <div id="content-wrapper" class="d-flex flex-column">
                 <div id="content">
-                    <!-- 상단바-->
-                    <th:block th:replace="/layout/fragments/top :: topbarFragment"></th:block>
+                    <!-- 상단바 <th:block th:replace="/layout/fragments/top :: topbarFragment"></th:block>-->
+                    <th:block th:replace="layout/fragments/top :: topbarFragment"></th:block>
 
                     <!-- 본문-->
                     <th:block layout:fragment="content"></th:block>
                 </div>
 
-                <!-- 공통 하단-->
-                <th:block th:replace="/layout/fragments/footer :: footerFragment"></th:block>
+                <!-- 공통 하단 <th:block th:replace="/layout/fragments/footer :: footerFragment"></th:block>-->
+                <th:block th:replace="layout/fragments/footer :: footerFragment"></th:block>
             </div>
         </div>
-
-        <!-- 공통 스크립트-->
-        <th:block th:replace="/layout/fragments/script :: scriptFragment"></th:block>
     </body>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        //window.onload = () => {    
+        window.addEventListener("load", function(){
+        });
+
+        // 페이지 이동
+        function moveSearchPage() {
+            const form = document.getElementById('mainSearchForm');            
+            const queryParams = {
+                page: 1,
+                recordSize: 10,
+                pageSize: 10,
+                keyword: form.search.value,
+                searchType: ""					
+            }
+            const a = new URLSearchParams(queryParams).toString();
+            //location.href = location.pathname + "board/search" + '?' + new URLSearchParams(queryParams).toString();
+            location.href = (location.pathname == "/") ? location.pathname + "board/search" + '?' + new URLSearchParams(queryParams).toString()
+            : "/board/search" + '?' + new URLSearchParams(queryParams).toString();
+            //alert(location.href);
+        }
+
+        function moveBoardSearchPage(flag, table, keyword) {
+            const form = document.getElementById('mainSearchForm');            
+            const queryParams = {
+                boardTable : table,
+                page: 1,
+                recordSize: 10,
+                pageSize: 10,
+                keyword: (keyword) ? keyword : form.search.value,
+                searchType: ""					
+            }
+            let path;
+
+            // 1 : 더보기, 2 : 테이블 버튼 선택
+            if(flag == "1")
+                path = "board/list";
+            else
+                path = "board/search";
+
+            //location.href = location.pathname + "board/search" + '?' + new URLSearchParams(queryParams).toString();
+            location.href = (location.pathname == "/") ? location.pathname + path + '?' + new URLSearchParams(queryParams).toString()
+            : "/" + path + '?' + new URLSearchParams(queryParams).toString();
+            //alert(location.href);
+        }
+
+        // 페이지 이동
+        function moveSearchTagPage(boardId, keyword) {
+            const queryParams = {
+                boardId : boardId,
+                page: 1,
+                recordSize: 10,
+                pageSize: 10,
+                keyword: keyword,
+                searchType: "tag"				
+            }
+
+            //location.href = location.pathname + "board/search" + '?' + new URLSearchParams(queryParams).toString();
+            location.href = "/board/list" + '?' + new URLSearchParams(queryParams).toString();
+            //alert(location.href);
+        }
+        /*]]>*/
+
+        $("#mainSearchForm").on("keyup", function(e) {                
+            if (e.key == "Enter")
+            {
+                var searchForm = document.getElementById("search");
+                if (isEmpty(searchForm.value) == true) {
+                    alert("키워드를 입력해 주세요.");
+                    return false;
+                }                    
+                else{                
+                    moveSearchPage();
+                }
+            }
+        });
+
+    </script>
+
 </html>

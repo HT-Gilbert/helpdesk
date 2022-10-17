@@ -6,26 +6,50 @@
     <!-- Sidebar -->
     <!-- <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar"> -->
     <div>
-        <ul class="nav nav-pills flex-column mb-auto">
+        <ul class="nav nav-pills flex-column mb-auto">            
+            <th:block th:each="navmenu: ${menuList}" th:if="${navmenu.menuName == '공지사항'}">
             <li class="nav-item">
-                <a href="/board/list" class="nav-link active" aria-current="page">
+                <a th:href="|@{${navmenu.menuLink}}?boardId=${navmenu.boardId}|" th:text="${navmenu.menuName}" class="nav-link active" aria-current="page">
                     <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
-                    공지사항
                 </a>
             </li>
-            <!-- 권한이 999인 메뉴들은 로그인했을때만 보여준다-->
-            <th:block th:each="navmenu: ${menuList}" th:if="${navmenu.menuUpperid == 10}">
-            <li>
-                <hr th:if="${navmenu.menuRole == 999}" sec:authorize="isAuthenticated()">
-                <hr th:unless="${navmenu.menuRole == 999}">
-                <a th:href="@{/#}" class="nav-link link-dark" th:if="${navmenu.menuRole == 999}" sec:authorize="isAuthenticated()" th:text="${navmenu.menuName}"></a>
-                <a th:href="@{/#}" class="nav-link link-dark" th:unless="${navmenu.menuRole == 999}" th:text="${navmenu.menuName}"></a>
-                <ul style="margin-left: 20px;" th:each="submenu: ${menuList}" th:if="${navmenu.menuLv == submenu.menuUpperid}">
-                    <li th:if="${submenu.menuRole == 999}" sec:authorize="isAuthenticated()">
-                        <a th:href="@{${submenu.menuLink}}" th:text="${submenu.menuName}"></a>
+            </th:block>
+            <!-- 권한이 999인 메뉴들은 로그인했을때만 보여준다 1은 공지사항 표시임-->
+            <th:block th:each="navmenu: ${menuList}" th:if="${navmenu.menuPosition.equals('100')}">
+            <li>                                                                         
+                <div th:switch="${#authorization.expression('isAuthenticated()')}">
+                    <div th:case="true">
+                        <hr>
+                        <div th:if="${navmenu.menuLv.equals('000') && #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                            
+                            <div th:text="${navmenu.menuName}"></div>
+                        </div>
+                        <div th:if="${!navmenu.menuLv.equals('010') && !navmenu.menuRole.equals('000')}" sec:authorize="hasRole('ROLE_ENG')">
+                            <div th:text="${navmenu.menuName}"></div>
+                        </div> 
+                    </div>
+                    <div th:case="false"> 
+                        <hr th:if="${navmenu.menuRole.equals('999')}">
+                        <div th:if="${navmenu.menuLv.equals('000') && navmenu.menuRole.equals('999')}" th:text="${navmenu.menuName}"></div>
+                    </div>
+                </div>
+
+                <!-- content 메뉴-->
+                <a th:href="|@{${navmenu.menuLink}}?contentId=${navmenu.menuUpperid}|" th:if="${navmenu.menuLv.equals('010')}" th:text="${navmenu.menuName}"></a>
+
+                <!-- 단순링크-->
+                <a th:href="|@{${navmenu.menuLink}}|" th:if="${navmenu.menuLv.equals('020')}" th:text="${navmenu.menuName}"></a>
+
+                <!-- 하위 메뉴 목록-->
+                <ul style="margin-left: 20px;" th:each="submenu: ${menuList}" th:if="${submenu.menuPosition.equals('110') && submenu.menuLv.equals('001') && navmenu.menuDislist == submenu.menuUpperid}">
+                    <li th:if="${submenu.menuRole.equals('999')}" sec:authorize="isAnonymous()">
+                        <a th:href="|@{${submenu.menuLink}}?boardId=${submenu.boardId}|" th:text="${submenu.menuName}"></a>
                     </li>
-                    <li th:unless="${submenu.menuRole == 999}">
-                        <a th:href="@{${submenu.menuLink}}" th:text="${submenu.menuName}"></a>
+                    <li sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a th:href="|@{${submenu.menuLink}}?boardId=${submenu.boardId}|" th:text="${submenu.menuName}"></a>
+                    </li>
+                    <li th:if="${!submenu.menuRole.equals('000')}" sec:authorize="hasRole('ROLE_ENG')">
+                        <a th:href="|@{${submenu.menuLink}}?boardId=${submenu.boardId}|" th:text="${submenu.menuName}"></a>
                     </li>
                 </ul>
             </li>

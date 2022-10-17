@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/layout">
    	<!-- layout Content -->
 	<th:block layout:fragment="content">
 		<!--<div id="wrapper">-->
@@ -8,21 +8,26 @@
 			<div class="row">
 				<div class="col-md-2">
 					<!-- NAV 영역-->
-					<th:block th:replace="/layout/fragments/nav :: sidebarFragment"></th:block>
+					<th:block th:replace="layout/fragments/nav :: sidebarFragment"></th:block>
 				</div>
 				<div class="col-md-10">
 				<!-- <div class="container">  -->
 					<form action="/board/oa" id="frm" method="get">	
 						<h4>
-							OA프로그램(준비중...)
+							OA프로그램
 						</h4>					
 						<hr>
 						<table>
 							<td>
-							<button type="button" class="btn btn-dark m-1" data-bs-toggle="tooltip" data-bs-placement="left" title="Tooltip on left" th:text="전체"></button>
-							<th:block th:each="tag: ${tagList}">					
-								<button th:if="${tag.categoryId == 3}" type="button" class="btn btn-dark m-1" data-bs-toggle="tooltip" data-bs-placement="left" title="Tooltip on left" th:text="${tag.TagName}"></button>							
+							<!-- 전체 Tag선택시 현재 리스트를 다시 보여준다-->
+							<button type="button" class="btn btn-dark m-1" data-bs-toggle="tooltip" data-bs-placement="left" 
+							 th:title="전체" th:text="전체" th:onclick="|location.href='@{/board/oa/list}'|"></button>
+							 <!-- Tag선택시 해당 Tag를 검색한 결과를 조회해서 보여준다 th:onclick="onSearch(this.getAttribute('tagValue'))"-->
+							<th:block th:each="tag: ${tagList}">
+								<button th:if="${tag.categoryId == 4}" type="button" class="btn btn-dark m-1" data-bs-toggle="tooltip" data-bs-placement="left" 
+								th:title="${tag.TagName}" th:text="${tag.TagName}" th:tagValue="${tag.TagName}" th:onclick="|location.href='@{/board/oa/list/action(tagValue=${tag.TagName})}'|"></button>	
 							</th:block>
+							<!-- th:onclick="|location.href='@{/board/driver/list/action(tagName=${tag.TagName})}'|"-->
 						</td>
 						</table>
 						<hr>
@@ -33,51 +38,48 @@
 										<span th:text="${resultMap.totalCnt}"></span>건
 										<span th:text="${resultMap.curPage + 1}"></span>페이지
 									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-danger" onclick="fnDelete()">삭제</button>
-									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/driver/write}'|">글쓰기</button>
+									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/oa/write}'|">글쓰기</button>
 									                                                               
 									</ul>
 								</div>
 								<thead class="thead-strong">
 									<tr>
 										<th sec:authorize="hasRole('ROLE_ADMIN')" style="background-color: #eeeeee;" th:align="center" width="5%"><input type="checkbox" id="chkAll"></th>
-										<th style="background-color: #eeeeee;" th:align="center" width="10%">번호</th>
-										<th style="background-color: #eeeeee;" th:align="center" width="10%">태그</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="8%">번호</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="15%">태그</th>
 										<th style="background-color: #eeeeee;" th:align="center" width="">제목</th>
 										<th style="background-color: #eeeeee;" th:align="center" width="20%">작성자</th>
-										<th style="background-color: #eeeeee;" th:align="center" width="10%">조회수</th>
-										<th style="background-color: #eeeeee;" th:align="center" width="20%">작성일</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="8%">조회수</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="17%">작성일</th>
 									</tr>
 								</thead>
 								<tbody id="tbody">
-									<tr th:each="driverList,index : ${resultMap.driverList}" th:with="paging=${resultMap.paging}">
+									<tr th:each="oaList,index : ${resultMap.oaList}" th:with="paging=${resultMap.paging}">
 										<td sec:authorize="hasRole('ROLE_ADMIN')">
-											<input type="checkbox" name="deleteId" th:value="${driverList.id}">
-										</td>									
-										<!-- 공지글이면 '공지'로 표시-->
-										<td th:align="center" style="font-weight:bold; color: blue" th:if="${driverList.isNotice}" th:utext="공지"></td>
-										<td th:align="center" th:unless="${driverList.isNotice}" th:text="${(resultMap.totalCnt - index.index) - (paging.pageNumber * paging.pageSize)}"></td>	
+											<input type="checkbox" name="deleteId" th:value="${oaList.id}">
+										<td th:align="center" style="font-weight:bold; color: blue" th:if="${oaList.isNotice}" th:utext="공지"></td>
+										<td th:align="center" th:unless="${oaList.isNotice}" th:text="${(resultMap.totalCnt - index.index) - (paging.pageNumber * paging.pageSize)}"></td>	
 
-										<!--<td th:align="center" th:text="${driverList.id}"></td> -->
-										<td><button type="button" class="btn btn-success m-1" data-bs-toggle="tooltip" data-bs-placement="left" title="Tooltip on left" th:text="${driverList.tag}"></button></td><td th:align="left"><a th:href="@{view(id=${driverList.id})}">[[${driverList.title}]]</a></td>
-										<td th:align="center" th:text="${driverList.registerId}"></td>
-										<td th:align="center" th:text="${driverList.readCnt}"></td>
-										<td th:align="center" th:text="${driverList.registerTime}"></td>
+										<td><button type="button" class="btn btn-success m-1" data-bs-toggle="tooltip" data-bs-placement="left" th:title="${oaList.tag}" th:text="${workList.tag}" 
+											th:tagValue="${oaList.tag}" th:onclick="|location.href='@{/board/oa/list/action(tagValue=${oaList.tag})}'|"></button></td>								
+										<td th:align="left" >
+											<a th:href="|@{view}${resultMap.paginationInfo.makeQueryString(resultMap.paginationInfo.curPage)}&id=${oaList.id}|" th:text="${oaList.title}"></a>
+										</td>
+										<td th:align="center" th:text="${oaList.registerId}"></td>
+										<td th:align="center" th:text="${oaList.readCnt}"></td>
+										<td th:align="center" th:text="${oaList.registerTime}"></td>
 									<tr>
 								</tbody>
 							</table>
-							<div class="row">
-								<div class="col">
-									<ul class="pagination">
-										<li class="page-item" th:each="index : ${#numbers.sequence(1, resultMap.totalPage)}" th:with="paging=${resultMap.paging}">
-											<a class="page-link" th:classappend="${paging.pageNumber ==  (index-1)} ? bg-primary : bg-secondary" th:href="@{./list(page=${index - 1},page=${paging.pageSize})}">
-												<span class="text-white" th:text="${index}"></span>
-											</a>											
-										</li>										
-									</ul>											
-								</div>
+							<div class="row" ></div>
+							<th:block layout:fragment="paging">
+								<nav th:replace="board/fragments/common :: pagination"></nav>
+							</th:block>
 							</div>
-						</div>
+						</div>						
 					</form>
+					<th:block layout:fragment="search">
+						<div th:replace="board/fragments/common :: search"></div>
 				</div>
 			</div>
 	    </div>
@@ -109,7 +111,7 @@
 				if (delInpChkLen > 0) {
 					if (confirm("Do you want to delete it?")) {
 						let frm = $("#frm");
-						frm.attr("action","/board/driver/delete");
+						frm.attr("action","/board/oa/delete");
 						frm.attr("method","post");
 						frm.submit();
 					}
@@ -117,6 +119,41 @@
 					alert("Not selected.");
 				}
 			}
+				/*<![CDATA[*/
+
+			function movePage(uri, queryString) {
+				location.href = uri + queryString;
+			}
+
+			function searchBoard(form) {
+				/*[- 드롭다운이 아닌 메인 검색 키워드로 검색했을 때 -]*/
+				var searchForm = document.getElementById("searchForm");
+				alert(searchForm.action);
+				searchForm.action = "/board/oa/list/action";
+				alert(searchForm.action);
+				alert("1");
+				if (isEmpty(form) == true) {
+					var searchKeyword = document.getElementById("subSearchKeyword");
+					if (isEmpty(searchKeyword.value) == true) {
+						alert("키워드를 입력해 주세요.");
+						searchKeyword.focus();
+						return false;
+					}
+					form = document.getElementById("searchForm");
+					form.searchKeyword.value = searchKeyword.value;					
+					form.submit();
+					alert("end");
+				}
+
+				if (isEmpty(form.searchKeyword.value) == true) {
+					alert("키워드를 입력해 주세요.");
+					return false;
+				}
+			}
+			/*[- end of function -]*/
+
+			/*]]>*/
+			
 		</script>
 	</th:block>
 </html>

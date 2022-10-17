@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/layout">
+   	<!-- layout Content -->
+	<th:block layout:fragment="content">
+		<!--<div id="wrapper">-->
+		<div class="container">
+			<hr>
+			<div class="row">
+				<div class="col-md-2">
+					<!-- NAV 영역-->
+					<th:block th:replace="layout/fragments/nav :: sidebarFragment"></th:block>
+				</div>
+				<div class="col-md-10">
+				<!-- <div class="container">  -->
+			
+					<form action="/board/list" id="frm" method="get">
+						<div class="col-md-12 mt-4">
+							<table class="table text-center" th:if="${#lists.isEmpty(resultMap) == false}">
+                                <div class="resultInfo">
+                                    <h4 th:text="|${params.keyword} 전체검색 결과|"></h4>
+                                    <ul>
+                                        <li>[[${resultMap.searchBoardCount}]]개 게시판</li>
+										<li> | </li>
+                                        <li>[[${resultMap.searchListCount}]]개 게시글</li>                                    
+                                    </ul>
+                                </div>
+                                <div class="clearfix"></div>
+								<div class="resultTable">
+									<button th:if="${params.boardTable == null}" type="button" th:onclick="moveBoardSearchPage(2, '', [[${params.keyword}]])" class="btn btn-primary" th:text="전체게시판"></button>
+									<button th:unless="${params.boardTable == null}" type="button" th:onclick="moveBoardSearchPage(2, '', [[${params.keyword}]])" class="btn btn-search" th:text="전체게시판"></button>
+									<button th:if="${params.boardTable}== ${list.boardTable}" th:each="list,index : ${resultMap.searchBoardList}" type="button" th:onclick="moveBoardSearchPage(2, [[${list.boardTable}]], [[${params.keyword}]])" class="btn btn-primary" th:text="${list.boardTitle}"></button>
+									<button th:unless="${params.boardTable} == ${list.boardTable}" th:each="list,index : ${resultMap.searchBoardList}" type="button" th:onclick="moveBoardSearchPage(2, [[${list.boardTable}]], [[${params.keyword}]])" class="btn btn-search" th:text="${list.boardTitle}"></button>
+								</div>
+							</table>
+						</div>
+
+						<!--<div th:each="list,index : ${resultMap.searchBoardList}">-->
+						<div class="resultList" th:each="board,index : ${resultMap.searchBoardList}">
+							<th:block th:if="${index.index} == ${i.index}" th:each="flag , i : ${resultMap.searchMoreFlag}">
+								<div class="more">
+								<a th:if="${flag} == '1'" th:onclick="moveBoardSearchPage(1, [[${board.boardTable}]], [[${params.keyword}]])" th:text="더보기"></a>
+								</div>
+							</th:block>
+							<h5 >[[${board.boardTitle}]]</h5>
+							<th:block th:if="${board.boardTitle} == ${list.searchBoardTitle}" th:each="list : ${resultMap.searchList}">
+								<ul>
+                                    <li id="listContent" name="listContent" th:onclick="goViewPage([[${list.id}]], [[${list.searchBoardTable}]])" th:utext="${list.title}"></li>
+									<li id="listContent" name="listContent" th:utext="${list.content}"></li>
+                                    <!-- <li id="listContent" name="listContent" th:onclick="goViewPage([[${list.id}]], [[${list.searchBoardTable}]])" th:utext="${list.content}"></li> -->
+                                    <li th:text="${list.registerId}"></li>
+                                    <li th:text="${list.registerTime}"></li>
+                                </ul>
+							</th:block>
+						</div>
+						
+								
+					</form>			
+				</div>
+	    <script th:inline="javascript">
+			// 게시판 테이블명
+			/*<![CDATA[*/			
+			var boardTable;
+			//window.onload = () => {    
+			window.addEventListener("load", function(){		
+				boardId = /*[[ ${params.boardId} ]]*/null;
+				var params = /*[[ ${params} ]]*/null;
+				//setQueryStringParams();
+
+                //findAllPost();
+
+				const ele = document.getElementsByName('listContent');                
+				// 게시글 제목의 태그 제거 하고 보여줌			
+                var search = /*[[${params.keyword}]]*/null;
+				for(var i=0;i<ele.length;i++){
+					//innetHTML
+					oriText1 = ele[i].innerHTML.replace(/(<([^>]+)>)/ig,"").replace(/&nbsp;/gi," ")
+                                .replace(search, "<b><span style='color: red;'>"+search+"</span></b>");                    
+					
+                    ele[i].innerHTML = oriText1;
+				}	   
+
+				// for(var i=0;i<ele.length;i++){
+				// 	oriText1 = ele[i].innerText;
+                //     document.querySelector(ele[i]) = oriText1;
+				// }
+
+                //var regex = new RegExp(search,'gi');
+                  //  $(this).html( $(this).text().replace(regex, "<span class='text-red'>"+search+"</span>") );
+				///oriText = ele.innerHTML;
+				//oriText1 = ele.innerText;
+				//alert(oriText);
+				//alert(oriText1);
+				//netText = oriText.replace(/(<([^>]+)>)/ig,"");
+				//netText1 = oriText1.replace(/(<([^>]+)>)/ig,"");
+				//netText1 = netText1.replace(/&nbsp;/gi," ");
+				//alert(netText);
+				//alert(netText1);
+				//document.getElementById('listContent') = netText1;
+
+            });
+
+			// 쿼리 스트링 파라미터 셋팅
+			function setQueryStringParams() {
+
+				if ( !location.search ) {
+					return false;
+				}
+
+				const form = document.getElementById('searchForm');				
+
+				new URLSearchParams(location.search).forEach((value, key) => {
+					if (form[key]) {
+						form[key].value = value;
+					}
+				})
+
+				document.getElementById('subSearchKeyword').value = form.keyword.value;
+			}
+            // 게시글 리스트 조회
+   
+
+            // 리스트 HTML draw
+            function drawList(list, num) {                
+                let html = '';
+                list.forEach(obj => {                    
+                    html += `
+                        <tr>
+                            <td>${obj.isNotice === true ? '공지' : num--}</td>
+                            <td class="text-left"><a href="javascript: void(0);" onclick="goViewPage(${obj.id});">${obj.title}</a></td>
+                            <td>${obj.registerId}</td>
+							<td>${obj.readCnt}</td>
+                            <td>${obj.registerTime}</td>
+                            
+                        </tr>
+                    `;
+                })
+
+               // document.getElementById('list').innerHTML = html;
+            }
+
+
+            // 페이지 HTML draw
+            function drawPage(pagination, params) {				
+                if ( !pagination || !params ) {
+                    document.querySelector('.pagination').innerHTML = '';
+                    return false;
+                }
+
+                let html = '';
+
+                // 첫 페이지, 이전 페이지
+                if (pagination.existPrevPage) {
+                    html += `
+                        <li><a href="javascript:void(0)" onclick="movePage(1);" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                        <li><a href="javascript:void(0)" onclick="movePage(${pagination.startPage - 1});" aria-label="Previous"><span aria-hidden="true">&lsaquo;</span></a></li>
+                    `;
+                }
+
+                // 페이지 번호
+                for (let i = pagination.startPage; i <= pagination.endPage; i++) {
+                    const active = (i === params.page) ? 'class="active"' : '';
+                    html += `<li ${active}><a href="javascript:void(0)" onclick="movePage(${i})">${i}</a></li>`;
+                }
+
+                // 다음 페이지, 마지막 페이지
+                if (pagination.existNextPage) {
+                    html += `
+                        <li><a href="javascript:void(0)" onclick="movePage(${pagination.endPage + 1});" aria-label="Next"><span aria-hidden="true">&rsaquo;</span></a></li>
+                        <li><a href="javascript:void(0)" onclick="movePage(${pagination.totalPageCount});" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                    `;
+                }
+
+                document.querySelector('.pagination').innerHTML = html;
+            }
+            // 페이지 이동
+            function movePage(page) {
+				const form = document.getElementById('searchForm');
+                const queryParams = {
+					boardTable: boardTable,
+					boardId: boardId,
+                    page: (page) ? page : 1,
+                    recordSize: 10,
+                    pageSize: 10,
+					keyword: form.keyword.value,
+            		searchType: form.searchType.value					
+                }
+                location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+            }
+
+			// 게시글 상세 페이지로 이동
+			function goViewPage(id, table) {
+                const queryString = (location.search) ? location.search + `&boardTable=${table}&id=${id}` : `?boardTable=${table}&id=${id}`;
+				//alert(location.href);
+                location.href = '/board/view' + queryString;
+            }
+
+			// 게시글쓰기 페이지로 이동
+			function goWritePage() {
+                const queryString = (location.search) ? location.search + `&boardTable=${boardTable}` : `?boardTable=${boardTable}`;
+                location.href = '/board/write' + queryString;
+            }
+            /*]]>*/
+
+	    	// header checkbox event
+	    	$("#chkAll").click(function() {
+	    		if (this.checked) {
+	    			$("input[name='deleteId']").prop("checked", true);
+	    		} else {
+	    			$("input[name='deleteId']").prop("checked", false);
+	    		}
+	    	});
+	    	
+	    	// body checkbox event
+	    	$("input[name='deleteId']").click(function() {
+	    		let delInpLen = $("input[name='deleteId']").length;
+	    		let delInpChkLen = $("input[name='deleteId']:checked").length;
+	    		
+	    		if (delInpLen == delInpChkLen) {
+	    			$("#chkAll").prop("checked", true);
+	    		} else {
+	    			$("#chkAll").prop("checked", false);
+	    		}
+	    	});
+	    
+			function fnDelete() {
+				let delInpChkLen = $("input[name='deleteId']:checked").length;
+				
+				if (delInpChkLen > 0) {
+					if (confirm("Do you want to delete it?")) {
+						let frm = $("#frm");
+						frm.attr("action","/board/delete" + location.search + `&boardTable=${boardTable}`);
+						frm.attr("method","post");
+						frm.submit();
+					}
+				} else {
+					alert("Not selected.");
+				}
+			}
+
+		</script>
+	</th:block>
+</html>

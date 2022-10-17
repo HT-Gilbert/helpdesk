@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/layout">
    	<!-- layout Content -->
 	<th:block layout:fragment="content">
 		<div class="container">
@@ -7,7 +7,7 @@
 			<div class="row">
 				<div class="col-md-2">
 					<!-- NAV 영역-->
-					<th:block th:replace="/layout/fragments/nav :: sidebarFragment"></th:block>
+					<th:block th:replace="layout/fragments/nav :: sidebarFragment"></th:block>
 				</div>
 				<div class="col-md-10">
 					<h1>장치드라이버</h1>
@@ -23,6 +23,47 @@
 						<div class="mb-3">
 							<label class="form-label font-weight-bold"><span class="text-danger">* </span>내용</label>
 							<textarea class="form-control" rows="5" name="content" required ></textarea>
+						</div>
+
+						<!-- editor테스트-->
+						<style>
+							div#editor {
+								padding: 16px 24px;
+								border: 1px solid #D6D6D6;
+								border-radius: 4px;
+							}
+							button.active {
+								background-color: purple;
+								color: #FFF;
+							}
+
+						</style>
+						<label class="form-label font-weight-bold"><span class="text-danger">* </span>editor테스트</label>
+						<div class="editor-menu">
+							<button id="btn-bold">
+								<b>B</b>
+							</button>
+							<button id="btn-italic">
+								<i>I</i>
+							</button>
+							<button id="btn-underline">
+								<u>U</u>
+							</button>
+							<button id="btn-strike">
+								<s>S</s>
+							</button>
+							<button id="btn-ordered-list">
+								OL
+							</button>
+							<button id="btn-unordered-list">
+								UL
+							</button>
+							<button id="btn-image">
+								IMG
+							</button>
+						</div>
+						
+						<div class="mb-3" id="editor" contenteditable="true">
 						</div>
 						<div class="mb-3">
 							<label class="form-label font-weight-bold"><span class="text-danger">* </span>카테고리</label>
@@ -53,7 +94,11 @@
 							</div>
 						</div>
 						<div class="mt-5">
-							<button type="button" class="btn btn-success" th:onclick="|location.href='@{/board/driver/list}'|">이전</button>
+							<!--searchType 값 유무에 따라 경로 분기-->
+							<button type="button" th:if="${not #strings.isEmpty(resultMap.paginationInfo.searchType)}" class="btn btn-success" 
+							th:onclick="|location.href='@{/board/driver/list/action(curPage=${resultMap.paginationInfo.curPage}, searchType=${resultMap.paginationInfo.searchType}, searchKeyword=${resultMap.paginationInfo.searchKeyword})}'|">이전</button>
+							<button type="button" th:unless="${not #strings.isEmpty(resultMap.paginationInfo.searchType)}" class="btn btn-success" 
+							th:onclick="|location.href='@{/board/driver/list(curPage=${resultMap.paginationInfo.curPage})}'|">이전</button>	
 							<button type="button" class="btn btn-primary" onclick="fnSubmit();">등록</button>
 						</div>						
 					</form>
@@ -134,6 +179,101 @@
 		            }
 		        });
 		    });
+
+			const editor = document.getElementById('editor');
+			const btnBold = document.getElementById('btn-bold');
+			const btnItalic = document.getElementById('btn-italic');
+			const btnUnderline = document.getElementById('btn-underline');
+			const btnStrike = document.getElementById('btn-strike');
+			const btnOrderedList = document.getElementById('btn-ordered-list');
+			const btnUnorderedList = document.getElementById('btn-unordered-list');
+
+			btnBold.addEventListener('click', function () {
+				setStyle('bold');
+			});
+
+			btnItalic.addEventListener('click', function () {
+				setStyle('italic');
+			});
+
+			btnUnderline.addEventListener('click', function () {
+				setStyle('underline');
+			});
+
+			btnStrike.addEventListener('click', function () {
+				setStyle('strikeThrough')
+			});
+
+			btnOrderedList.addEventListener('click', function () {
+				setStyle('insertOrderedList');
+			});
+
+			btnUnorderedList.addEventListener('click', function () {
+				setStyle('insertUnorderedList');
+			});
+
+			function setStyle(style) {
+				document.execCommand(style);
+				focusEditor();
+			}
+
+			// 버튼 클릭 시 에디터가 포커스를 잃기 때문에 다시 에디터에 포커스를 해줌
+			function focusEditor() {
+				editor.focus({preventScroll: true});
+			}
+			editor.addEventListener('keydown', function () {
+				checkStyle();
+			});
+
+			editor.addEventListener('mousedown', function () {
+				checkStyle();
+			});
+			
+			
+			function setStyle(style) {
+				document.execCommand(style);
+				focusEditor();
+				checkStyle();
+			}
+			
+			
+			function checkStyle() {
+				if (isStyle('bold')) {
+					btnBold.classList.add('active');
+				} else {
+					btnBold.classList.remove('active');
+				}
+				if (isStyle('italic')) {
+					btnItalic.classList.add('active');
+				} else {
+					btnItalic.classList.remove('active');
+				}
+				if (isStyle('underline')) {
+					btnUnderline.classList.add('active');
+				} else {
+					btnUnderline.classList.remove('active');
+				}
+				if (isStyle('strikeThrough')) {
+					btnStrike.classList.add('active');
+				} else {
+					btnStrike.classList.remove('active');
+				}
+				if (isStyle('insertOrderedList')) {
+					btnOrderedList.classList.add('active');
+				} else {
+					btnOrderedList.classList.remove('active');
+				}
+				if (isStyle('insertUnorderedList')) {
+					btnUnorderedList.classList.add('active');
+				} else {
+					btnUnorderedList.classList.remove('active');
+				}
+			}
+
+			function isStyle(style) {
+				return document.queryCommandState(style);
+			}
+
 		</script>
 	</th:block>
 </html>

@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/layout">
+    <th:block layout:fragment="content">
+    <meta charset="utf-8">
+    <div class="container">
+        <hr>
+        <div class="row">
+            <div class="col-md-2">
+                <!-- NAV 영역-->
+                <th:block th:replace="layout/fragments/nav :: sidebarFragment"></th:block>
+            </div>
+            <div class="col-md-10">
+                <form id="eform" th:action="@{/main/excel/read}" method="POST" enctype="multipart/form-data">
+                    <input th:type="file" th:name="file" >
+                    <input th:type="submit" value="업로드" />
+                </form>
+            </div>
+    <!--
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    -->
+
+    <script  th:inline="javascript">
+    </script>
+
+    </th:block>
+
+
+
+</html>

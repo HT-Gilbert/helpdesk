@@ -1,49 +1,151 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/layout">
    	<!-- layout Content -->
-	<th:block layout:fragment="content">
+	<th:block layout:fragment="content">		
 		<div class="container">
 			<hr>
 			<div class="row">
 				<div class="col-md-2">
 					<!-- NAV 영역-->
-					<th:block th:replace="/layout/fragments/nav :: sidebarFragment"></th:block>
+					<th:block th:replace="layout/fragments/nav :: sidebarFragment"></th:block>
 				</div>
 				<div class="col-md-10">
 					<h1>글쓰기</h1>
-					<form id="frm" action="/board/write/action" method="post" enctype="multipart/form-data">
-						<div class="mb-3">
-							<label class="form-label font-weight-bold"><span class="text-danger">* </span>제목</label>
-							<input type="text" class="form-control" name="title" required >
-							<div class="form-check">
-								<input id="notice" type="checkbox" class="form-check-input" name="notice" />
+					<form id="saveForm" th:action="|/board/save?boardTable=${boardTable}|" method="post" enctype="multipart/form-data">
+						<!--/* 새글쓰기 */-->
+						<div th:if="${#lists.isEmpty(resultMap)}">
+							<input type="hidden" id="isFileChange" name="isFileChange"  value="0" />
+							<div class="mb-3">
+								<label class="form-label font-weight-bold"><span class="text-danger">* </span>제목</label>
+								<input type="text" class="form-control" name="title" required >
+							</div>
+							<div class="form-check" >
+								<input id="notice" type="checkbox" class="form-check-input" name="notice"/>
 								<label for="notice" class="form-check-label">공지</label>
-						   </div>
-						</div>
-						<div class="mb-3">
-							<label class="form-label font-weight-bold"><span class="text-danger">* </span>내용</label>
-							<textarea class="form-control" rows="5" name="content" required ></textarea>
-						</div>
-						<div class="mb-3">
-							<label class="form-label font-weight-bold"><span class="text-danger">* </span>작성자</label>
-							<input type="text" class="form-control" name="registerId" readonly th:value="${#authentication.name}">
-						</div>
-						<div class="mb-3">
-							<label class="form-label font-weight-bold">파일업로드</label>
-							<div id="fileDiv">
-								<div class="custom-file mt-1" style="width: 50%">
-									<input type="file" class="custom-file-input" id="customFile" name="customFile" onchange="fnChngFile(this);">
-									<label class="custom-file-label" for="customFile">선택된 파일 없음</label>
+							</div>
+							<div class="mb-3">
+								<div class="form-check">
+									<input id="file" type="checkbox" class="form-check-input" name="file"/>
+									<label for="file" class="form-check-label">파일여부 테스트</label>
 								</div>
-								<div class="float-right mt-2">
-									<a class="btn btn-primary text-white" href="javascript:fnAddFileDiv();" >+</a>
-									<a class="btn btn-danger text-white" href="javascript:fnDelFileDiv();" >-</a>
+							</div>
+						
+							<div class="mb-3">
+								<label class="form-label font-weight-bold"><span class="text-danger">* </span>내용</label>
+								<textarea class="form-control" rows="5"  id="summernote" name="content" required ></textarea>
+							</div>
+							<div class="mb-3">
+								<label class="form-label font-weight-bold"><span class="text-danger">* </span>작성자</label>
+								<input type="text" class="form-control" name="registerId" readonly th:value="${#authentication.name}">
+							</div>
+							<th:block th:if="${tagList.isEmpty() == false}">
+								<div class="mb-3">
+									<label class="form-label font-weight-bold"><span class="text-danger">* </span>카테고리</label>
+									<!-- <input type="text" class="form-control" name="tag" readonly th:value="${#authentication.name}"> -->
+									<select class="select_type01 w170" name="tag">
+										<option value="선택"> 선택 </option>
+										<option th:each="tag, index : ${tagList}"
+												th:value="${tag.tagName}"
+												th:utext="${tag.tagName}"></option>
+									</select>
 								</div>
-							</div>							
+							</th:block>
+							<div  data-name="fileDiv" class="form-group filebox bs3-primary">
+								<label for="file_0" class="col-sm-2 control-label">파일1</label>
+								<div class="col-sm-10">
+									<input type="text" class="upload-name" value="파일 찾기" readonly />
+									<label for="file_0" class="control-label">찾아보기</label>
+									<input type="file" name="afiles" id="file_0" class="upload-hidden" onchange="changeFilename(this)" />
+								
+									<button type="button" onclick="addFile()" class="btn btn-bordered btn-xs visible-xs-inline visible-sm-inline visible-md-inline visible-lg-inline">
+										<i class="fa fa-plus" aria-hidden="true"></i>
+									</button>
+									<button type="button" onclick="removeFile(this)" class="btn btn-bordered btn-xs visible-xs-inline visible-sm-inline visible-md-inline visible-lg-inline">
+										<i class="fa fa-minus" aria-hidden="true"></i>
+									</button>
+								</div>
+							</div>
 						</div>
-						<div class="mt-5">
-							<button type="button" class="btn btn-success" onclick="javascript:location.href='/board/list'">이전</button>
-							<button type="button" class="btn btn-primary" onclick="fnSubmit();">등록</button>
+
+						<!--/* 글수정 */-->
+						<div th:unless="${#lists.isEmpty(resultMap)}">
+							<input type="hidden" id="isNotice" name="isNotice" />
+							<!--/* 파일이 변경된 경우, 해당 파라미터를 이용하여 파일 삭제 및 재등록 처리 */-->
+							<input type="hidden" id="isFileChange" name="isFileChange"  value="0" />
+							<div class="mb-3">
+								<label class="form-label font-weight-bold"><span class="text-danger">* </span>제목</label>
+								<input type="text" class="form-control" name="title" required >
+							</div>								
+							<div class="form-check" >
+								<input th:if="${resultMap.list.isNotice}" id="notice" type="checkbox" class="form-check-input" name="notice" checked="checked" />
+								<input th:unless="${resultMap.list.isNotice}" id="notice" type="checkbox" class="form-check-input" name="notice"/>
+								<label for="notice" class="form-check-label">공지</label>
+							</div>
+							<div class="mb-3">
+								<div class="form-check">
+									<input id="file" type="checkbox" class="form-check-input" name="file"/>
+									<label for="file" class="form-check-label">파일여부 테스트</label>
+								</div>
+							</div>
+							<div class="mb-3">
+								<label class="form-label font-weight-bold"><span class="text-danger">* </span>내용</label>
+								<textarea class="form-control" rows="5"  id="summernote" name="content" required ></textarea>
+							</div>
+							<div class="mb-3">
+								<label class="form-label font-weight-bold"><span class="text-danger">* </span>작성자</label>
+								<input type="text" class="form-control" name="registerId" readonly th:value="${#authentication.name}">
+							</div>
+							<th:block th:if="${tagList.isEmpty() == false}">
+								<div class="mb-3">
+									<label class="form-label font-weight-bold"><span class="text-danger">* </span>카테고리</label>
+									<!-- <input type="text" class="form-control" name="tag" readonly th:value="${#authentication.name}"> -->
+									<select class="select_type01 w170" name="tag">
+										<option value="선택"> 선택 </option>
+										<option th:each="tag, index : ${tagList}"
+												th:value="${tag.tagName}"
+												th:utext="${tag.tagName}"></option>
+									</select>
+								</div>
+							</th:block>
+							<th:block th:if="${resultMap.fileList.isEmpty() == false}">
+								<div th:each="row, status : ${resultMap.fileList}" data-name="fileDiv" class="form-group filebox bs3-primary">
+									<label th:for="|file_${status.index}|" class="col-sm-2 control-label">[[ |파일${status.count}| ]]</label>
+									<div class="col-sm-10">
+										<input type="hidden" name="fileIds" th:value="${row.id}" />
+										<input type="text" class="upload-name" th:value="${row.originalName}" readonly />
+										<label th:for="|file_${status.index}|" class="control-label">찾아보기</label>
+										<input type="file" name="afiles" th:id="|file_${status.index}|" class="upload-hidden" onchange="changeFilename(this)" />
+									
+										<button th:if="${status.first}" type="button" onclick="addFile()" class="btn btn-bordered btn-xs visible-xs-inline visible-sm-inline visible-md-inline visible-lg-inline">
+											<i class="fa fa-plus" aria-hidden="true"></i>
+										</button>
+										<button type="button" onclick="removeFile(this)" class="btn btn-bordered btn-xs visible-xs-inline visible-sm-inline visible-md-inline visible-lg-inline">
+											<i class="fa fa-minus" aria-hidden="true"></i>
+										</button>
+									</div>
+								</div>
+							</th:block>
+							<th:block th:unless="${resultMap.fileList.isEmpty() == false}">
+								<div  data-name="fileDiv" class="form-group filebox bs3-primary">
+									<label for="file_0" class="col-sm-2 control-label">파일1</label>
+									<div class="col-sm-10">
+										<input type="text" class="upload-name" value="파일 찾기" readonly />
+										<label for="file_0" class="control-label">찾아보기</label>
+										<input type="file" name="afiles" id="file_0" class="upload-hidden" onchange="changeFilename(this)" />
+									
+										<button type="button" onclick="addFile()" class="btn btn-bordered btn-xs visible-xs-inline visible-sm-inline visible-md-inline visible-lg-inline">
+											<i class="fa fa-plus" aria-hidden="true"></i>
+										</button>
+										<button type="button" onclick="removeFile(this)" class="btn btn-bordered btn-xs visible-xs-inline visible-sm-inline visible-md-inline visible-lg-inline">
+											<i class="fa fa-minus" aria-hidden="true"></i>
+										</button>
+									</div>
+								</div>
+							</th:block>
+						</div>
+						<div id="btnDiv" class="mt-5">
+							<button type="button" class="btn btn-success" onclick="goListPage();">이전</button>							
+							<button type="button" class="btn btn-primary" onclick="savePost();">등록</button>
 						</div>						
 						<!-- 댓글 추가 준비
 
@@ -66,79 +168,209 @@
 			</div>
 		</div>
 		<script th:inline="javascript">
-			let frm = $("#frm");
-			let $origFileDiv = $(".custom-file");
-			let fileMaxCnt = 3, fileMaxSize = 10485760, fileAllowExt = ["jpg","jpeg","png"];
-			
-			function fnAddFileDiv() {
-				let fileDivCnt = $(".custom-file").length;
-				
-				if (fileDivCnt >= fileMaxCnt) {
-					alert("Can't add any more file.");
+			/*<![CDATA[*/
+			window.onload = () => {		
+				renderPostInfo();
+			}
+
+			// 게시글 상세정보 렌더링
+			function renderPostInfo() {
+				const resultMap = /*[[ ${resultMap} ]]*/null;
+				if ( !resultMap ) {
 					return false;
 				}
-				
-				let $copyFileDiv = $origFileDiv.clone(true);
-				
-				$copyFileDiv.find("input").val("");
-				$copyFileDiv.find("label").text("Choose file");
-				$copyFileDiv.find("label").attr("for", "customFile" + fileDivCnt);
-				$copyFileDiv.find("input").attr("id", "customFile" + fileDivCnt);
-				$copyFileDiv.find("input").attr("name", "customFile" + fileDivCnt);
-				
-				$("#fileDiv").append($copyFileDiv);
+
+				const form = document.getElementById('saveForm');
+				const fields = ['id', 'title', 'content', 'registerId', 'isNotice'];
+				form.isNotice.checked = resultMap.list.isNotice;
+
+				fields.forEach(field => {
+					form[field].value = resultMap.list[field];
+				})
+				$('#summernote').summernote('pasteHTML', resultMap.list.content);	
 			}
-			
-			function fnDelFileDiv() {
-				if ($(".custom-file").length <= 1) {
-					alert("Can't Delete any more file.");
+
+
+			// 게시글 저장(수정)
+			function savePost() {
+				const resultMap = /*[[ ${resultMap} ]]*/null;
+				const form = document.getElementById('saveForm');
+				const fields = [form.title, form.registerId, form.content];
+				const fieldNames = ['제목', '이름', '내용'];
+
+				//alert(form.title + " " + form.registerId + " " + form.content);
+				for (let i = 0, len = fields.length; i < len; i++) {
+					if ( !isValid(fields[i], fieldNames[i]) ) {
+						return false;
+					}
+				}
+				new URLSearchParams(location.search).forEach((value, key) => {
+					const input = document.createElement('input');
+					input.type = 'hidden';
+					input.name = key;
+					input.value = value;
+					form.append(input);
+				})
+
+				//alert(form.isNotice); undefined
+				//alert(form.notice.checked); false				
+				form.action = resultMap ? '/board/update' : '/board/save';
+				form.submit();
+			}
+
+   
+			// 게시글 리스트 페이지로 이동
+			function goListPage() {
+                const queryString = new URLSearchParams(location.search);
+                queryString.delete('id');
+				queryString.delete('boardTable');
+                location.href = '/board/list' + '?' + queryString.toString();
+            }
+
+       		 
+			// 게시판 테이블명			
+			let boardTable = /*[[ ${boardTable} ]]*/null;
+			/*]]>*/
+			let frm = $("#saveForm");			
+
+			let fileIdx = 0; /*[- 파일 인덱스 처리용 전역 변수 -]*/
+
+			function addFile() {
+
+				const fileDivs = $('div[data-name="fileDiv"]');
+				//alert(fileDivs.length);
+				if (fileDivs.length > 2) {
+					alert('파일은 최대 세 개까지 업로드 할 수 있습니다.');
 					return false;
 				}
-				$(".custom-file")[$(".custom-file").length - 1].remove();
-			}
-			
-			function fnChngFile(obj) {
-				let fileObj	= $(obj)[0];
-				let fileVal	= fileObj.files[0].name;
-				let fileSize	= fileObj.files[0].size;
-				let fileExt	= fileVal.substring(fileVal.lastIndexOf(".") + 1, fileVal.length); 
-				let flag = true;
-				
-				//if (fileAllowExt.indexOf(fileExt.toLowerCase()) < 0) {
-				//	alert("It is not a registrable extension.");
-				//} else 
-				
-				if(fileSize > fileMaxSize) {
-					alert("Attachments can be registered up to 10MB.");
-				} else {
-					flag = false;
-					$(obj).next("label").text(fileVal);
+				else
+				{
+					fileIdx = fileDivs.length;
 				}
-				
-				if (flag) {
-					$(obj).val("");
-					$(obj).next("label").text("선택된 파일 없음");
-				}
+
+				document.getElementById('isFileChange').value = '1';
+				fileIdx++;
+
+				const fileHtml = `
+					<div data-name="fileDiv" class="form-group filebox bs3-primary">
+						<label for="file_${fileIdx}" class="col-sm-2 control-label"></label>
+						<div class="col-sm-10">
+							<input type="text" class="upload-name" value="파일 찾기" readonly />
+							<label for="file_${fileIdx}" class="control-label">찾아보기</label>
+							<input type="file" name="afiles" id="file_${fileIdx}" class="upload-hidden" onchange="changeFilename(this)" />
+
+							<button type="button" onclick="removeFile(this)" class="btn btn-bordered btn-xs visible-xs-inline visible-sm-inline visible-md-inline visible-lg-inline">
+								<i class="fa fa-minus" aria-hidden="true"></i>
+							</button>
+						</div>
+					</div>
+				`;
+
+				$('#btnDiv').before(fileHtml);
 			}
-			
-			function fnSubmit() {
-				frm.submit();
-		    }
-		    
-		    $(function() {
-		    	frm.validate({
-		            messages: {
-		            	// Message Custom..
-		            	title: {
-		                    required : "Custom required, Please enter a title."
-		                }
-		            },
-		            submitHandler: function (form) {
-		                // Submit Action..
-		                form.submit();
-		            }
-		        });
-		    });
+
+			function removeFile(elem) {
+
+				document.getElementById('isFileChange').value = '1';
+
+				const prevTag = $(elem).prev().prop('tagName');
+				if (prevTag === 'BUTTON') {
+					const file = $(elem).prevAll('input[type="file"]');
+					const filename = $(elem).prevAll('input[type="text"]');
+					file.val('');
+					filename.val('파일 찾기');
+					return false;
+				}
+
+				const target = $(elem).parents('div[data-name="fileDiv"]');
+				target.remove();
+			}
+
+			function changeFilename(file) {
+				document.getElementById('isFileChange').value = '1';
+
+				file = $(file);
+				const filename = file[0].files[0].name;
+				const target = file.prevAll('input.upload-name');
+				target.val(filename);
+
+				file.prevAll('input[name="fileIds"]').remove();
+			}
+
+			$(document).ready(function() {
+				//여기 아래 부분
+				$('#summernote').summernote({
+					height: 300,                 // 에디터 높이
+					minHeight: null,             // 최소 높이
+					maxHeight: null,             // 최대 높이
+					focus: true,                  // 에디터 로딩후 포커스를 맞출지 여부
+					lang: "ko-KR",					// 한글 설정
+					placeholder:  "",	//placeholder 설정
+					toolbar: [
+							// [groupName, [list of button]]
+							['fontname', ['fontname']],
+							['fontsize', ['fontsize']],
+							['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
+							['color', ['forecolor','color']],
+							['table', ['table']],
+							['para', ['ul', 'ol', 'paragraph']],
+							['height', ['height']],
+							['insert',['picture','video']],
+							['view', ['help']]
+							//['insert',['picture','link','video']],
+							//['view', ['fullscreen', 'help']]
+						],
+					fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋움체','바탕체'],
+					fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72'],
+					callbacks: {	//여기 부분이 이미지를 첨부하는 부분
+						onImageUpload : function(files) {
+							uploadSummernoteImageFile(files[0],this);
+						},
+						onPaste: function (e) {
+							var clipboardData = e.originalEvent.clipboardData;
+							if (clipboardData && clipboardData.items && clipboardData.items.length) {
+								var item = clipboardData.items[0];
+								if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+									e.preventDefault();
+								}
+							}
+						}
+					}
+				});
+			});
+
+			/**
+			 * 이미지 파일 업로드
+			 */
+			function uploadSummernoteImageFile(file, editor) {
+				data = new FormData();
+				data.append("imgFile", file);
+				$.ajax({
+					data : data,
+					type : "POST",
+					url : "/uploadSummernoteImageFile",
+					contentType : false,
+					processData : false,
+					dataType : "json",
+					async : false,
+					success : function(data) {
+						//항상 업로드된 파일의 url이 있어야 한다.
+						$(editor).summernote('insertImage', data.url);
+					},
+					error: function(data) {
+						console.log(data);
+					}
+				});
+			}
+
+			// summernote drag & drop
+			$("div.note-editable").on('drop',function(e){
+				for(i=0; i< e.originalEvent.dataTransfer.files.length; i++){
+					uploadSummernoteImageFile(e.originalEvent.dataTransfer.files[i],$("#summernote")[0]);
+				}
+				e.preventDefault();
+			})
+
 		</script>
 	</th:block>
 </html>

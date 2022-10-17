@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/layout">
    	<!-- layout Content -->
 	<th:block layout:fragment="content">
 		<div class="container">
@@ -7,12 +7,15 @@
 			<div class="row">
 				<div class="col-md-2">
 					<!-- NAV 영역-->
-					<th:block th:replace="/layout/fragments/nav :: sidebarFragment"></th:block>
+					<th:block th:replace="layout/fragments/nav :: sidebarFragment"></th:block>
 				</div>
 				<div class="col-md-10">
 					<h1>Board View.</h1>
 					<form id="frm" action="/board/driver/view/action" method="post" th:with="info=${resultMap.info}" enctype="multipart/form-data">
 						<input type="hidden" name="id" th:value="${info.id}">
+						<input type="hidden" name="curPage" th:value="${resultMap.paginationInfo.curPage}">
+						<input type="hidden" name="searchType" th:value="${resultMap.paginationInfo.searchType}">
+						<input type="hidden" name="searchKeyword" th:value="${resultMap.paginationInfo.searchKeyword}">
 						<div class="mb-3">
 							<label class="form-label font-weight-bold"><span class="text-danger">* </span>Title.</label>
 							<input type="text" class="form-control" name="title" th:value="${info.title}" required >
@@ -23,6 +26,10 @@
 						   </div>
 						</div>
 						
+						<div class="mb-3">
+							<label class="form-label font-weight-bold"><span class="text-danger">* </span>Content.</label>
+							<textarea class="form-control" rows="5" name="tag" th:text="${info.tag}" required ></textarea>
+						</div>
 						<div class="mb-3">
 							<label class="form-label font-weight-bold"><span class="text-danger">* </span>Content.</label>
 							<textarea class="form-control" rows="5" name="content" th:text="${info.content}" required ></textarea>
@@ -56,7 +63,11 @@
 						</div>
 						<div class="clearfix mt-5">
 							<div class="">
-								<button type="button" class="btn btn-success" onclick="javascript:location.href='/board/list'">Previous</button>
+								<!--searchType 값 유무에 따라 경로 분기-->
+								<button type="button" th:if="${not #strings.isEmpty(resultMap.paginationInfo.searchType)}" class="btn btn-success" 
+								th:onclick="|location.href='@{/board/driver/list/action(curPage=${resultMap.paginationInfo.curPage}, searchType=${resultMap.paginationInfo.searchType}, searchKeyword=${resultMap.paginationInfo.searchKeyword})}'|">Previous</button>
+								<button type="button" th:unless="${not #strings.isEmpty(resultMap.paginationInfo.searchType)}" class="btn btn-success" 
+								th:onclick="|location.href='@{/board/driver/list(curPage=${resultMap.paginationInfo.curPage})}'|">Previous</button>								
 								<button type="button" class="btn btn-primary" onclick="fnSubmit();">Edit</button>
 								<button type="button" class="btn btn-danger" th:onclick="fnViewDelete()">Delete</button>
 							</div>
@@ -133,7 +144,7 @@
 			
 			function fnViewDelete() {
 				if (confirm("Do you want to delete it?")) {
-					frm.attr("action","/board/view/delete");
+					frm.attr("action","/board/driver/view/delete");
 					frm.submit();
 				}
 			}

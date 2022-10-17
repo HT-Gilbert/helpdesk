@@ -7,13 +7,15 @@
 						장애처리 프로그램
 					</h4>
 					<hr>
-					
-					<th:block th:each="category, cstatus: ${categoryList}">
+					<input type="hidden" id="searchType">
+					<input type="hidden" id="keyword">
+					<th:block th:each="board, cstatus: ${boardList}" th:if="${board.boardSearch == true && board.boardTagUse == true}">
 						<h5>						                        
-							<span th:if="${category.categoryId == +cstatus.count}" th:text="${category.categoryName}"></span>
+							<span th:text="${board.boardTitle}"></span>
 						</h5>
 						<th:block th:each="tag: ${tagList}">					
-							<button th:if="${tag.categoryId == category.categoryId}" type="button" class="btn btn-secondary m-1" data-bs-toggle="tooltip" data-bs-placement="left" title="Tooltip on left" th:text="${tag.TagName}"></button>							
+							<button th:if="${tag.boardId == board.boardId}" type="button" class="btn btn-secondary m-1" data-bs-toggle="tooltip" data-bs-placement="left" 
+							title="Tooltip on left" th:text="${tag.TagName}" th:onclick="moveSearchTagPage([[${tag.boardId}]], [[${tag.tagName}]]);"></button>							
 						</th:block>
 						<hr>
 					</th:block>

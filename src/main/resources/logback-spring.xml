@@ -28,7 +28,11 @@
 	</appender>
 
 	<!-- Logger -->
-	<logger name="com.board" level="info" appender-ref="console" />
+	<logger name="com.help.board" level="ERROR" appender-ref="console" />
+	<logger name="com.help.board.Service" level="TRACE">
+	<logger name="com.help.main.Service" level="ERROR"></logger>
+			<appender-ref ref="console" />
+	</logger> 
 	<!-- <logger name="jdbc.sqlonly" level="INFO" appender-ref="console-infolog" /> -->
 	<!-- <logger name="jdbc.sqltiming" level="INFO" appender-ref="console-infolog" /> -->
 
@@ -38,7 +42,17 @@
 	</root>
 
 	<!-- JDBC 로그설정 -->
+	<logger name="com.help" level="INFO" appender-ref="console" />
 	<!-- SQL문과 해당 SQL을 실행시키는데 수행된 시간 정보(milliseconds)를 포함한다. -->	
-	<logger name="jdbc.sqltiming" level="info"/>
+	<!--<logger name="jdbc.sqltiming" level="info"/>-->
+	<logger name="jdbc" level="OFF"/>
+  
+	<logger name="jdbc.sqlonly" level="OFF"/>
+	<logger name="jdbc.sqltiming" level="DEBUG"/>
+	<logger name="jdbc.audit" level="OFF"/>
+	<logger name="jdbc.resultset" level="OFF"/>
+	<logger name="jdbc.resultsettable" level="DEBUG"/>
+	<logger name="jdbc.connection" level="OFF"/>
+
 
 </configuration>

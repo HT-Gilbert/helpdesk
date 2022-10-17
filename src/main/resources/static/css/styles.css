@@ -7436,10 +7436,6 @@ textarea.form-control-lg {
   background-color: #212529 !important;
 }
 
-.bg-hana {
-  background-color: #008485 !important;
-}
-
 .bg-body {
   background-color: #fff !important;
 }
@@ -11281,18 +11277,7 @@ body {
   box-sizing: border-box;
   position: relative;
   font-size: 20px;
-  color: $color;
+  color: color;
   font-weight: 900;
   text-shadow: 3px 0 0 rgba(white, .5);
-  &::before {
-    content: "";
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    border: 4px solid $color;
-    border-radius: 10px;
-    box-sizing: border-box;
-    width: calc(100% - 10px);
-    height: calc(100% - 10px);
-    z-index: -1;
   }

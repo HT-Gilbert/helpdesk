@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/layoutadmin">
+   	<!-- layout Content -->
+	<th:block layout:fragment="content">
+		<!--<div id="wrapper">-->
+		<div class="container">
+			<hr>
+			<div class="row">
+				<div class="col-md-2">
+					<!-- NAV 영역-->
+					<th:block th:replace="layout/fragments/navadmin :: sidebarFragment"></th:block>
+				</div>
+				<div class="col-md-10">
+				<!-- <div class="container">  -->
+					<form action="/" id="frm" method="get">	
+						<h4>
+							게시판관리
+						</h4>					
+						<hr>
+						<div class="col-md-12 mt-4">
+							<input type='button' value='선택수정' th:onclick="fnEdit()"/>
+							<input type='button' value='선택삭제' th:onclick="fnDelete()"/>
+							<!--<input type='button' value='게시판추가' onclick='addRow()' />-->
+							<input type='button' value='게시판추가' th:onclick="|location.href='@{/admin/boardCreate}'|"/>
+							
+							<br><br>
+							<table class="table text-center">
+								<thead class="thead-strong">
+									<tr>
+										<th style="background-color: #eeeeee;" th:align="center" width="5%"><input type="checkbox" id="chkAll"></th>
+										<th style="background-color: #eeeeee;" th:align="center" width="8%">순번</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="15%">DB테이블</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="">게시판명</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="20%">권한</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="8%">검색허용</th>
+									</tr>
+								</thead>
+								<tbody id="tbody">
+									<tr th:each="boardList : ${boardList}" >
+										<td>
+											<input type="checkbox" name="deleteId" th:value="${boardList.boardId}">
+										</td>	
+										<!--<td scope="row" th:text="${data.num}"></td>-->
+										<td th:text="${boardList.boardId}"></td>
+										<td contenteditable='false' name="deleteTable" th:value="${boardList.boardTable}" th:text="${boardList.boardTable}"></td>
+										<td contenteditable='true' th:text="${boardList.boardTitle}"></td>
+										
+										<!--
+										<td th:text="${boardList.boardRole}">
+											<input type ="text">
+										</td>
+										-->										
+										<td>											
+											<select name="boardRole">
+												<th:block th:each="roleList : ${roleList}" th:switch="${roleList}">
+													<!--
+													<option th:value="${roleList}" th:text="${roleList}" th:selected="${boardList.boardRole} == ${roleList}"></option>
+													-->
+													<option th:case="ROLE_ADMIN" th:value="${roleList}" th:text="관리자" th:selected="${boardList.boardRole} == ${roleList}"></option>
+													<option th:case="ROLE_ANONYMOUS" th:value="${roleList}" th:text="익명" th:selected="${boardList.boardRole} == ${roleList}"></option>
+													<option th:case="ROLE_ENG" th:value="${roleList}" th:text="엔지니어" th:selected="${boardList.boardRole} == ${roleList}"></option>
+													<option th:case="ROLE_MANAGEMENT" th:value="${roleList}" th:text="매니저" th:selected="${boardList.boardRole} == ${roleList}"></option>
+													<option th:case="ROLE_USER" th:value="${roleList}" th:text="일반" th:selected="${boardList.boardRole} == ${roleList}"></option>
+													<option th:case="*" th:value="${roleList}" th:text="${roleList}" th:selected="${boardList.boardRole} == ${roleList}"></option>
+												</th:block>
+											</select>
+										</td>
+
+										<!-- <td th:text="${boardList.boardSearch}"></td>-->
+										<td>
+											<input type="checkbox" name="searchFg" th:if="${boardList.boardSearch} == true" checked="checked">
+											<input type="checkbox" name="searchFg" th:unless="${boardList.boardSearch} == true" >
+										</td>	
+									  </tr>
+								</tbody>
+							</table>
+						</div>						
+					</form>
+				</div>
+			</div>
+	    </div>
+	    <script th:inline="javascript">
+			function addRow() {
+			// table element 찾기
+			const table = document.getElementById('tbody');
+			
+			// 새 행(Row) 추가
+			const newRow = table.insertRow();
+			
+			// 새 행(Row)에 Cell 추가
+			const newCell1 = newRow.insertCell(0);
+			const newCell2 = newRow.insertCell(1);
+			const newCell3 = newRow.insertCell(2);
+			const newCell4 = newRow.insertCell(3);
+			const newCell5 = newRow.insertCell(4);
+			const newCell6 = newRow.insertCell(5);
+			
+			// Cell에 텍스트 추가
+			newCell1.innerText = '1';
+			newCell2.innerText = ' ';
+			newCell3.innerText = ' ';
+			newCell4.innerText = ' ';
+			newCell5.innerText = ' ';
+			newCell6.innerText = ' ';
+			}
+	    	// header checkbox event
+	    	$("#chkAll").click(function() {
+	    		if (this.checked) {
+	    			$("input[name='deleteId']").prop("checked", true);
+	    		} else {
+	    			$("input[name='deleteId']").prop("checked", false);
+	    		}
+	    	});
+	    	
+	    	// body checkbox event
+	    	$("input[name='deleteId']").click(function() {
+	    		let delInpLen = $("input[name='deleteId']").length;
+	    		let delInpChkLen = $("input[name='deleteId']:checked").length;
+	    		
+	    		if (delInpLen == delInpChkLen) {
+	    			$("#chkAll").prop("checked", true);
+	    		} else {
+	    			$("#chkAll").prop("checked", false);
+	    		}
+	    	});
+	    
+			function fnDelete() {
+				let delInpChkLen = $("input[name='deleteId']:checked").length;
+				
+				if (delInpChkLen > 0) {
+					if (confirm("Do you want to delete it?")) {
+						let frm = $("#frm");
+						frm.attr("action","/admin/board/delete");
+						frm.attr("method","post");
+						frm.submit();
+					}
+				} else {
+					alert("Not selected.");
+				}
+			}
+
+			function fnEdit() {
+				let delInpChkLen = $("input[name='deleteId']:checked").length;
+				
+				if (delInpChkLen > 0) {
+					if (confirm("Do you want to edit it?")) {
+						let frm = $("#frm");
+						frm.attr("action","/admin/board/edit");
+						frm.attr("method","post");
+						frm.submit();
+					}
+				} else {
+					alert("Not selected.");
+				}
+			}
+
+
+		</script>		
+	</th:block>
+</html>

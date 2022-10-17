@@ -24,6 +24,8 @@ repositories {
 }
 
 dependencies {
+	//mybatis
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4:1.16'
 	implementation 'org.apache.commons:commons-lang3'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
@@ -40,6 +42,14 @@ dependencies {
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
 	implementation group: 'org.slf4j', name: 'jul-to-slf4j', version: '1.7.32'
 	implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4' /* Apache Commons FileUpload */
+	// Apache POI , Tika 관련 의존성(엑셀관련)
+	// https://mvnrepository.com/artifact/org.apache.poi/poi
+	implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
+	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
+	// https://mvnrepository.com/artifact/org.apache.tika/tika-core	
+	implementation group: 'org.apache.tika', name: 'tika-core', version: '2.3.0'
+	implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+	// 엑셀 end
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	implementation 'com.github.zhanhb:thymeleaf-layout-dialect:2.4.1'
 	compileOnly 'org.projectlombok:lombok'
