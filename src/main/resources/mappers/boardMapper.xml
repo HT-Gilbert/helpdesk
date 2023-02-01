@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.help.board.repository.BoardMapper">
+	<sql id="boardColumns">
+        id
+		, title
+		, content
+		, read_cnt
+		, tag
+		, register_id
+		, register_name
+        , is_delete
+		, is_notice
+		, is_file
+		, is_reply
+		, register_time
+		, update_time
+	</sql>
+
+    <sql id="insertBoardColumns">
+		title
+		, content
+		, read_cnt
+		, tag
+		, register_id
+		, register_name
+        , is_delete
+		, is_notice
+		, is_file
+		, is_reply
+		, register_time
+		, update_time
+	</sql>
+
+	<!-- 게시글 검색 -->
+    <sql id="search">
+        <!-- 검색 키워드가 있을 때 -->
+        <if test="keyword != null and keyword != ''">
+            <choose>
+                <!-- 검색 유형이 있을 때 -->
+                <when test="searchType != null and searchType != ''">
+                    <choose>
+                        <when test="'title'.equals( searchType )">
+							<![CDATA[AND REGEXP_REPLACE(title, '<[^>]+>', '')]]>  LIKE CONCAT('%', #{keyword}, '%')
+                        </when>
+                        <when test="'content'.equals( searchType )">
+                            <![CDATA[AND REGEXP_REPLACE(content, '<[^>]+>', '')]]> LIKE CONCAT('%', #{keyword}, '%')
+                        </when>
+                        <when test="'registerId'.equals( searchType )">
+                            AND writer LIKE CONCAT('%', #{keyword}, '%')
+                        </when>
+						<when test="'tag'.equals( searchType )">
+                            AND tag LIKE CONCAT('%', #{keyword}, '%')
+                        </when>
+                    </choose>
+                </when>
+                <!-- 전체 검색일 때 -->
+                <otherwise>
+                    AND (
+						<![CDATA[REGEXP_REPLACE(title, '<[^>]+>', '')]]> LIKE CONCAT('%', #{keyword}, '%')
+                        OR <![CDATA[REGEXP_REPLACE(content, '<[^>]+>', '')]]> LIKE CONCAT('%', #{keyword}, '%')
+                        OR register_id LIKE CONCAT('%', #{keyword}, '%')
+						OR tag LIKE CONCAT('%', #{keyword}, '%')
+                    )
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+	<insert id="save1" parameterType="com.help.board.dto.BoardBasicRequestVo" useGeneratedKeys="true" keyProperty="h2.boardBasicRequestDto.id">
+		INSERT INTO ${h.boardTable} (
+			<include refid="insertBoardColumns" />
+		) VALUES (
+            #{h2.boardBasicRequestDto.title}
+			, #{h2.boardBasicRequestDto.content}
+			, 0
+			, #{h2.boardBasicRequestDto.tag}
+			, #{h2.boardBasicRequestDto.registerId}
+			, IFNULL(#{h2.boardBasicRequestDto.isDelete}, '0')
+			, IFNULL(#{h2.boardBasicRequestDto.isNotice}, '0')
+			, IFNULL(#{h2.boardBasicRequestDto.isFile}, '0')
+			, IFNULL(#{h2.boardBasicRequestDto.isReply}, '0')
+			, now()
+			, now()
+		)
+	</insert>
+
+	<select id="findById1" parameterType="hashmap" resultType="com.help.board.dto.BoardBasicResponseDto">
+		SELECT
+			<include refid="boardColumns" />
+		FROM
+			${boardTable}
+		WHERE
+			is_delete = 'N'
+		AND
+			id = #{listId}
+	</select>
+
+	<update id="updateBoardReadCnt" parameterType="hashmap">
+		UPDATE ${boardTable}
+		Set	read_cnt = read_cnt + 1
+		WHERE
+			id = #{listId}
+	</update>
+
+	<update id="updateBoard" parameterType="com.help.board.dto.BoardBasicRequestVo" useGeneratedKeys="true" keyProperty="h2.boardBasicRequestDto.id">
+		UPDATE ${h.boardTable}
+		SET
+			  update_time = NOW()
+			, title = #{h2.boardBasicRequestDto.title}
+			, content = #{h2.boardBasicRequestDto.content}
+			, tag = #{h2.boardBasicRequestDto.tag}
+			, register_id = #{h2.boardBasicRequestDto.registerId}
+            , is_delete = IFNULL(#{h2.boardBasicRequestDto.isDelete}, '0')
+			, is_notice = IFNULL(#{h2.boardBasicRequestDto.isNotice}, '0')
+			, is_file = IFNULL(#{h2.boardBasicRequestDto.isFile}, '0')
+			, is_reply = IFNULL(#{h2.boardBasicRequestDto.isReply}, '0')
+		WHERE
+			id = #{h2.boardBasicRequestDto.id}
+	</update>
+
+	<select id="searchFindAll" parameterType="com.help.board.dto.SearchDto" resultType="com.help.board.dto.SearchResultDto">
+		SELECT
+			#{boardTable} as searchBoardTable, 
+			#{boardTitle} as searchBoardTitle,
+			id
+		, title
+		, content
+		, read_cnt
+		, tag
+		, register_id
+        , is_delete
+		, is_notice
+		, is_file
+		, is_reply
+		, register_time
+		, update_time
+		FROM
+			${boardTable}
+		WHERE
+			is_delete = '0'
+			<include refid="search" />
+		ORDER BY
+			is_delete ASC,
+			is_notice DESC,
+			id DESC,
+			register_time DESC
+		LIMIT #{pagination.limitStart}, #{recordSize}
+	</select>
+
+	<select id="findAll" parameterType="com.help.board.dto.SearchDto" resultType="com.help.board.dto.BoardBasicResponseDto">
+		SELECT
+			<include refid="boardColumns" />
+		FROM
+			${boardTable}
+		WHERE
+			is_delete = '0'
+			<include refid="search" />
+		ORDER BY
+			is_delete ASC,
+			is_notice DESC,
+			id DESC,
+			register_time DESC
+		LIMIT #{pagination.limitStart}, #{recordSize}
+	</select>
+
+	<select id="selectBoardTotalCount" parameterType="String" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			${boardTable}
+		WHERE
+			is_delete = '0'
+			<include refid="search" />
+	</select>
+
+	<delete id="deleteBoardData" parameterType="hashmap">
+        DELETE FROM ${boardTable} 
+		WHERE id IN 
+		<foreach collection="deleteIdList" item="id"  open="(" close=")" separator=",">
+			#{id.value}
+		</foreach>
+    </delete>
+
+	<update id="deleteBoard" parameterType="hashmap">
+		UPDATE ${boardTable}
+		SET
+			  is_delete = '1'
+		<!--	, delete_time = NOW() -->
+		WHERE id IN 
+		<foreach collection="deleteIdList" item="id"  open="(" close=")" separator=",">
+			#{id.value}
+		</foreach>
+	</update>
+
+	<delete id="deleteByIdData" parameterType="hashmap">
+        DELETE FROM ${boardTable} 
+		WHERE
+			id = #{deleteId}
+    </delete>
+
+	<update id="deleteById" parameterType="hashmap">
+		UPDATE ${boardTable}
+		SET
+			  is_delete = '1'
+			<!--	, delete_time = NOW() -->
+		WHERE
+			id = #{deleteId}
+	</update>
+
+	<select id="getRoleList" parameterType="String" resultType="String">
+		SELECT
+			role_name
+		FROM
+			role_list
+		<where>
+			<if test="strRole != null">AND role_priority >= (select role_priority from role_list where role_name = #{strRole}) </if>
+		</where>
+		<!-- WHERE
+			role_priority >= (select role_priority from role_list where role_name = #{strRole}) -->
+	</select>
+
+	<select id="getRolePriority" parameterType="String" resultType="String">
+		SELECT
+			role_priority
+		FROM
+			role_list
+		<where>
+			<if test="strRole != null">AND role_name = #{strRole} </if>
+		</where>
+		<!-- WHERE
+			role_priority >= (select role_priority from role_list where role_name = #{strRole}) -->
+	</select>
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.help.admin.repository.MenuMapper">
+    <!-- menu_list 테이블 전체 컬럼 -->
+        <sql id="postColumns">
+            menu_id
+          , menu_name
+          , menu_position
+          , menu_lv
+          , menu_dislist
+          , menu_upperid
+          , menu_role
+          , menu_group
+          , menu_link
+          , board_id
+      </sql>
+
+    <insert id="insertMenuData" parameterType="com.help.admin.dto.MenuDto" useGeneratedKeys="true" keyProperty="menuId">
+        insert into menu_list (menu_name, menu_position, menu_lv, menu_dislist, 
+        menu_upperid, menu_role, menu_group, menu_link, board_id )values(
+        #{menuName}, 
+        #{menuPosition},
+        #{menuLv},
+        #{menuDislist},
+        #{menuUpperid},
+        #{menuRole},
+        #{menuGroup},
+        #{menuLink},
+        #{boardId}
+        )
+   </insert>
+   
+    <select id="getMaxDislist" parameterType="com.help.admin.dto.MenuDto" resultType="int">
+    SELECT
+        NVL(MAX(menu_dislist), 0)
+    FROM
+        menu_list
+        <where>
+            <if test="menuPosition != null and !menuPosition.equals('')">
+                AND menu_position = #{menuPosition}
+            </if>
+            <if test="menuLv != null and !menuLv.equals('')">
+                AND menu_lv = #{menuLv}
+            </if>
+            <if test="menuRole != null and !menuRole.equals('')">
+                AND menu_role = #{menuRole}
+            </if>
+          </where>
+    </select>
+
+    <select id="getUpperMenuDislist" parameterType="com.help.admin.dto.MenuDto" resultType="String">
+        SELECT
+            NVL(menu_dislist, 1)
+        FROM
+            menu_list
+        <where>            
+            <if test="menuRole != null and !menuRole.equals('')">
+                AND menu_role = #{menuRole}
+            </if>
+            AND menu_lv = '000'
+            AND menu_position = '100'
+        </where>
+    </select>
+
+   <select id="findOne" parameterType="com.help.admin.dto.MenuDto" resultType="com.help.admin.dto.MenuDto">
+    SELECT
+        *
+    FROM
+        menu_list
+        <where>
+            <if test="menuName == ''">
+                AND menu_name = #{menuName}
+            </if>
+            <if test="menuPosition >= 0">
+                AND menu_position >= #{menuPosition}
+            </if>
+            <if test="menuLv >= 0">
+                AND menu_lv >= #{menuLv}
+            </if>
+            <if test="menuDislist >= 0">
+                AND menu_dislist >= #{menuDislist}
+            </if>
+            <if test="menuUpperid >= 0">
+                AND menu_upperid >= #{menuUpperid}
+            </if>
+            <if test="menuRole >= 0">
+                AND menu_role >= #{menuRole}
+            </if>
+          </where>
+    </select>
+
+    <delete id="deleteMenuList" parameterType="hashmap">
+        DELETE FROM menu_list 
+		WHERE board_id IN 
+		<foreach collection="deleteIdList" item="boardId"  open="(" close=")" separator=",">
+			#{boardId.value}
+		</foreach>
+    </delete>
+</mapper>

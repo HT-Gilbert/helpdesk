@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Properties>
+        <Property name="LOG_PATTERN">%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="consoleLog" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8" />
+        </Console>
+        <RollingFile name="fileLog" fileName="./logs/helpdesk${date:yyyyMMdd}.log" filePattern="./logs/helpdesk%d{yyyyMMdd}%02i.log">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" fileIndex="max" />
+        </RollingFile>
+        <RollingFile name="adminFileLog" fileName="./logs/admin${date:yyyyMMdd}.log" filePattern="./logs/helpdesk-%d{yyyyMMdd}-%i.log">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" fileIndex="min" />
+        </RollingFile>
+        <RollingFile name="boardFileLog" fileName="./logs/board${date:yyyyMMdd}.log" filePattern="./logs/helpdesk-%d{yyyyMMdd}-%i.log">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" fileIndex="min" />
+        </RollingFile>
+        <RollingFile name="mainFileLog" fileName="./logs/main${date:yyyyMMdd}.log" filePattern="./logs/helpdesk-%d{yyyyMMdd}-%i.log">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" fileIndex="min" />
+        </RollingFile>
+
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="consoleLog" />
+            <AppenderRef ref="fileLog" />
+        </Root>
+        <Logger name="com.help.admin" level="TRACE" additivity="true">
+            <AppenderRef ref="adminFileLog" />
+        </Logger>
+        <Logger name="com.help.board" level="TRACE" additivity="true">
+            <AppenderRef ref="boardFileLog" />
+        </Logger>
+        <Logger name="com.help.main" level="TRACE" additivity="true">
+            <AppenderRef ref="mainFileLog" />
+        </Logger>
+    </Loggers>
+</Configuration>

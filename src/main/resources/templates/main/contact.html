@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org">
+    <th:block th:fragment="contact">
+        <div class="col-md-3">
+            <form action="/main/contact" id="frm" method="get">
+            <!-- <div class="container">  -->
+                <h4 th:text="${contactList.content.title}"></h4>
+                <hr>
+                <div id="note"  contenteditable="false" name="content" style="width:100%; height:auto; " th:utext="${contactList.content.content}"></div>
+                <!--
+                <h4>
+                    장애처리 담당자
+                </h4>
+                <hr>
+                <table class="table text-center">
+                    <thead>
+                        <tr>										
+                            <th style="background-color: #eeeeee;" th:align="center" width="20%">담당자</th>
+                            <th style="background-color: #eeeeee;" th:align="center" width="23%">부서명</th>
+                            <th style="background-color: #eeeeee;" th:align="center" width="18%">대표번호</th>
+                            <th style="background-color: #eeeeee;" th:align="center" width="%">담당업무</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="list: ${contactList}">
+                            <td th:align="center" th:text="${list.deptName}"></td>
+                            <td th:align="left" th:text="${list.ptbName}"></td>
+                            <td th:align="center" th:text="${list.ptbTelNo}"></td>
+                            <td th:align="center" th:text="${list.taskName}"></td>
+                        <tr>
+                    </tbody>
+                </table>
+                -->							
+            </form>
+        </div>
+    </th:block>
+</html>

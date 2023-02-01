@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="sidebarFragment">
+
+    <!-- Sidebar -->
+    <!-- <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar"> -->
+    <div>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <!-- 권한이 999인 메뉴들은 로그인했을때만 보여준다-->
+            <th:block th:each="navmenu: ${menuList}" th:if="${navmenu.menuPosition == '200' && navmenu.menuLv == '000'}">
+            <li>
+                <hr>
+                <a th:href="@{${navmenu.menuLink}}" class="nav-link link-dark" th:text="${navmenu.menuName}"></a>
+                <ul style="margin-left: 20px;" th:each="submenu: ${menuList}" th:if="${navmenu.menuDislist == submenu.menuUpperid && submenu.menuPosition == '200' && submenu.menuLv == '001'}">
+                    <li>
+                        <a th:href="@{${submenu.menuLink}}" th:text="${submenu.menuName}"></a>
+                    </li>
+                </ul>
+            </li>
+            </th:block>
+            <hr>
+        </ul>
+    </div>
+
+</th:block>
+
+</html>

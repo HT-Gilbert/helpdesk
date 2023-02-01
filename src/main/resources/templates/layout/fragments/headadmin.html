@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="/layout/fragments/sidebar">
+
+<!-- Head -->
+<th:block th:fragment="headFragment">
+	<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+.bd-placeholder-img {
+	font-size: 1.125rem;
+	text-anchor: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+@media ( min-width : 768px) {
+	.bd-placeholder-img-lg {
+		font-size: 3.5rem;
+	}
+}
+</style>
+
+<nav class="nav nav-pills flex-column mb-auto">
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="p-3 bg-hana text-white">
+				<div class="container">
+					<header
+						class="d-flex flex-wrap  align-items-center justify-content-center  justify-content-lg-start py-3 mb-4 border-bottom">
+						<a href="/admin/main/"
+							class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+							<span class="fs-4 text-white">Administrator</span>
+						</a>
+						<ul class="nav nav-pills">
+							<a th:href="@{/}" class="nav-link px-2 text-white"><i class="fa fa-home"></i> </a>
+							<li class="nav-item" th:each="topmenu: ${menuList}" th:if="${topmenu.menuPosition == '000'}">
+								<a th:href="@{${topmenu.menuLink}}"	class="nav-link px-2 text-white" th:if="${topmenu.menuName == '로그아웃'and topmenu.menuRole == '999'}"
+								sec:authorize="isAuthenticated()" th:text="${topmenu.menuName}"></a> 
+								<a th:href="@{${topmenu.menuLink}}"	class="nav-link px-2 text-white" th:if="${topmenu.menuName == '관리자'and topmenu.menuRole == '999'}"
+								sec:authorize="hasRole('ROLE_ADMIN')"
+								th:text="${topmenu.menuName}"> </a>
+							</li>
+						</ul>
+					</header>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</nav>
+
+	</head>
+</th:block>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/layoutadmin}">
+   	<!-- layout Content -->
+	<th:block layout:fragment="content">
+		<!-- <div id="wrapper"> -->
+		<div class="container">
+			<hr>
+			<div class="row">
+				<div class="col-md-2">
+					<!-- NAV 영역-->
+					<th:block th:replace="layout/fragments/navadmin :: sidebarFragment"></th:block>
+				</div>
+				
+				<!-- 게시글 --
+				<th:block th:replace="main/mboard :: mboard"></th:block>
+				!-- 담당자 --
+				<th:block th:replace="main/contact :: contact"></th:block>
+				!-- 태그리스트--
+				<th:block th:replace="main/taglist :: taglist"></th:block>				
+				-->
+			</div>            
+	    </div>
+	</th:block>
+</html>	

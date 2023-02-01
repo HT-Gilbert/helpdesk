@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.help.admin.repository.MemberManageMapper">
+    <!-- 테이블 전체 컬럼 -->
+        <sql id="postColumns">
+            user_id
+        ,   user_name
+        ,   user_nick
+        ,   user_group
+        ,   user_role
+        ,   user_status
+        ,   user_email
+        ,   user_phone
+        ,   password
+        ,   total_login_count
+        ,   login_fail_count
+        ,   login_time
+        ,   register_time
+        ,   update_time
+        ,   pwd_update_time
+        ,   login_ip
+      </sql>
+
+      <select id="findAll" resultType="com.help.admin.dto.MemberDto">
+        select 
+        <include refid="postColumns" />
+         from 
+            user
+	</select>
+</mapper>

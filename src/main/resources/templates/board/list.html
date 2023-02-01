@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/layout">
+   	<!-- layout Content -->
+	<th:block layout:fragment="content">
+		<!--<div id="wrapper">-->
+		<div class="container">
+			<hr>
+			<div class="row">
+				<div class="col-md-2">
+					<!-- NAV 영역-->
+					<th:block th:replace="layout/fragments/nav :: sidebarFragment"></th:block>
+				</div>
+				<div class="col-md-10">
+				<!-- <div class="container">  -->
+				<h5 th:text="${resultMap.boardTitle}"></h5>
+				<th:block th:if="${#lists.isEmpty(tagList)==false}">
+					<hr>
+					<table>
+						<td>
+							<!-- 전체 Tag선택시 현재 리스트를 다시 보여준다-->
+							<button  type="button" class="btn btn-dark m-1" data-bs-toggle="tooltip" data-bs-placement="left" 
+							 th:title="전체" th:text="전체" th:onclick="document.getElementById('searchType').value = ''; document.getElementById('keyword').value = '';  movePage(1);"></button>
+							<th:block th:if="${#lists.isEmpty(tagList)==false}" th:each="tag, index : ${tagList}">						
+							 <!-- Tag선택시 해당 Tag를 검색한 결과를 조회해서 보여준다 th:onclick="onSearch(this.getAttribute('tagValue'))"-->													
+								<button type="button" class="btn btn-dark m-1" data-bs-toggle="tooltip" data-bs-placement="left" 
+								th:title="${tag.tagName}" th:text="${tag.tagName}" th:onclick="document.getElementById('searchType').value = 'tag'; document.getElementById('keyword').value = [[${tag.tagName}]];  movePage(1);"></button>
+							</th:block>	
+						</td>
+					</table>
+					<hr>					
+				</th:block>
+				
+					<form action="/board/list" id="frm" method="get">
+						<div class="col-md-12 mt-4">
+							<table class="table text-center">
+								<span th:if="${#lists.isEmpty(resultMap) == false}" th:text="|${params.pagination.totalRecordCount}건|"></span>
+								<thead class="thead-strong">
+									<tr>
+										<th sec:authorize="hasRole('ROLE_ADMIN')" style="background-color: #eeeeee;" th:align="center" width="5%"><input type="checkbox" id="chkAll"></th>
+										<th style="background-color: #eeeeee;" th:align="center" width="8%">번호</th>
+										<th th:if="${resultMap.useSearch}" style="background-color: #eeeeee;" th:align="center" width="15%">태그</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="">제목</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="20%">작성자</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="8%">조회수</th>
+										<th style="background-color: #eeeeee;" th:align="center" width="17%">작성일</th>
+									</tr>
+								</thead>
+								<tbody id="tbody" th:if="${#lists.isEmpty(resultMap) == false}">
+									<tr th:each="list,index : ${resultMap.boardList}" >										
+										<td sec:authorize="hasRole('ROLE_ADMIN')">
+											<input type="checkbox" name="deleteId" th:value="${list.id}">
+										</td>
+
+										<!-- 공지글이면 '공지'로 표시-->
+										<td th:align="center" style="font-weight:bold; color: blue" th:if="${list.isNotice}" th:utext="공지"></td>
+										<td th:align="center" th:unless="${list.isNotice}" th:text="${list.id}"></td>
+										<td th:align="center" th:if="${resultMap.useSearch}"><a th:href="@{list(boardId=${params.boardId}, searchType='tag', keyword=${list.tag})}" th:text="${list.tag}"></a></td>
+
+										<td th:align="left">
+											<a href="javascript: void(0);" th:onclick="goViewPage([[${list.id}]]);">[[${list.title}]]</a>
+										</td>
+										<td th:align="center" th:text="${list.registerId}"></td>
+										<td th:align="center" th:text="${list.readCnt}"></td>
+										<td th:align="center" th:text="${list.registerTime}"></td>
+									</tr>
+										<tr th:unless="${#lists.isEmpty(resultMap.boardList) == false}" >
+											<td colspan="5">검색된 결과가 없습니다.</td>
+										</tr>
+								</tbody>		 
+							</table>
+							<!--
+							<div class="row">
+								<div class="col">
+									<ul class="pagination">
+										<li class="page-item" th:each="index : ${#numbers.sequence(1, resultMap.totalPage)}" th:with="paging=${resultMap.paging}">
+											<a class="page-link" th:classappend="${paging.pageNumber ==  (index-1)} ? bg-primary : bg-secondary" th:href="@{./list(page=${index - 1},page=${paging.pageSize})}">
+												<span class="text-white" th:text="${index}"></span>
+											</a>
+										</li>										
+									</ul>
+									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-danger" onclick="fnDelete()">삭제</button>
+									<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/write}'|">글쓰기</button>
+								</div>
+							</div>
+							-->
+							<th:block layout:fragment="paging">
+								<nav aria-label="Page navigation" class="text-center">
+									<ul class="pagination">
+										
+									</ul>
+								</nav>
+							</th:block>
+							<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-danger" onclick="fnDelete()">삭제</button>
+							<button sec:authorize="hasRole('ROLE_ADMIN')" th:align="right" type="button" class="btn btn-primary" th:onclick="goWritePage()">글쓰기</button>
+							</div>
+						</div>
+					</form>
+					<div th:fragment="search" id="adv-search" class="input-group ">
+						<input type="search" id="subSearchKeyword" class="form-control" onkeyup="document.getElementById('keyword').value = this.value;" placeholder="키워드를 입력해 주세요." />
+							<div class="input-group-btn">
+								<div class="btn-group" role="group">
+									<div class="dropdown dropdown-lg">
+										<button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
+										<ul class="dropdown-menu dropdown-menu-right" role="menu">
+											<!--/* 검색 form */-->
+											<form id="searchForm" class="form-horizontal" onsubmit="" autocomplete="off">
+												<div class="form-group">
+													<label for="searchType">검색 유형</label>
+													<select id="searchType" name="searchType" class="form-control">
+														<option value="">전체</option>
+														<option value="title">제목</option>
+														<option value="tag">태그</option>
+														<option value="content">내용</option>
+														<option value="registerId">작성자</option>
+													</select>
+												</div>
+												<div class="form-group">
+													<label for="keyword">키워드</label>
+													<input type="search" id="keyword" name="searchKeyword" class="form-control" onkeyup="document.getElementById('subSearchKeyword').value = this.value;" placeholder="키워드를 입력해 주세요." />
+												</div>
+												<button type="button" onclick="movePage(1);" class="btn btn-primary"><i class="fa fa-search"></i></button>
+											</form>
+										</ul>
+									</div>
+									<button type="button" onclick="movePage(1);" class="btn btn-primary"><i class="fa fa-search"></i></button>
+								</div>
+							</div>
+						</div>
+					</div>					
+				</div>
+	    <script th:inline="javascript">
+			// 게시판 테이블명
+			/*<![CDATA[*/			
+			var boardTable;
+			//window.onload = () => {    
+			window.addEventListener("load", function(){
+				boardTable = /*[[ ${params.boardTable} ]]*/null;
+				boardId = /*[[ ${params.boardId} ]]*/null;
+				var params = /*[[ ${params} ]]*/null;
+				//alert(boardTable);
+				setQueryStringParams();
+
+                findAllPost();
+            });
+
+			// 쿼리 스트링 파라미터 셋팅
+			function setQueryStringParams() {
+				if ( !location.search ) {
+					return false;
+				}
+
+				const form = document.getElementById('searchForm');				
+
+				new URLSearchParams(location.search).forEach((value, key) => {
+					if (form[key]) {
+						form[key].value = value;
+					}
+				})
+
+				document.getElementById('subSearchKeyword').value = form.keyword.value;
+			}
+            // 게시글 리스트 조회
+            function findAllPost() {
+                const list = /*[[ ${resultMap.boardList} ]]*/null;
+                if ( !list.length ) {
+                    document.getElementById('list').innerHTML = '<td colspan="5">검색된 결과가 없습니다.</td>';
+                    drawPage();
+                    return false;
+                }
+
+                const pagination = /*[[ ${resultMap.pagination} ]]*/null;
+                const params = /*[[ ${params} ]]*/null;
+                let num = pagination.totalRecordCount - ((params.page - 1) * params.recordSize);
+
+                drawList(list, num);
+                drawPage(pagination, params);
+            }
+
+
+            // 리스트 HTML draw
+            function drawList(list, num) {                
+                let html = '';
+                list.forEach(obj => {                    
+                    html += `
+                        <tr>
+                            <td>${obj.isNotice === true ? '공지' : num--}</td>
+                            <td class="text-left"><a href="javascript: void(0);" onclick="goViewPage(${obj.id});">${obj.title}</a></td>
+                            <td>${obj.registerId}</td>
+							<td>${obj.readCnt}</td>
+                            <td>${obj.registerTime}</td>
+                            
+                        </tr>
+                    `;
+                })
+
+               // document.getElementById('list').innerHTML = html;
+            }
+
+
+            // 페이지 HTML draw
+            function drawPage(pagination, params) {				
+                if ( !pagination || !params ) {
+                    document.querySelector('.pagination').innerHTML = '';
+                    return false;
+                }
+
+                let html = '';
+
+                // 첫 페이지, 이전 페이지
+                if (pagination.existPrevPage) {
+                    html += `
+                        <li><a href="javascript:void(0)" onclick="movePage(1);" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                        <li><a href="javascript:void(0)" onclick="movePage(${pagination.startPage - 1});" aria-label="Previous"><span aria-hidden="true">&lsaquo;</span></a></li>
+                    `;
+                }
+
+                // 페이지 번호
+                for (let i = pagination.startPage; i <= pagination.endPage; i++) {
+                    const active = (i === params.page) ? 'class="active"' : '';
+                    html += `<li ${active}><a href="javascript:void(0)" onclick="movePage(${i})">${i}</a></li>`;
+                }
+
+                // 다음 페이지, 마지막 페이지
+                if (pagination.existNextPage) {
+                    html += `
+                        <li><a href="javascript:void(0)" onclick="movePage(${pagination.endPage + 1});" aria-label="Next"><span aria-hidden="true">&rsaquo;</span></a></li>
+                        <li><a href="javascript:void(0)" onclick="movePage(${pagination.totalPageCount});" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                    `;
+                }
+
+                document.querySelector('.pagination').innerHTML = html;
+            }
+            // 페이지 이동
+            function movePage(page) {
+				const form = document.getElementById('searchForm');
+                const queryParams = {
+					boardTable: boardTable,
+					boardId: boardId,
+                    page: (page) ? page : 1,
+                    recordSize: 10,
+                    pageSize: 10,
+					keyword: form.keyword.value,
+            		searchType: form.searchType.value					
+                }
+                location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+            }
+
+			// 게시글 상세 페이지로 이동
+			function goViewPage(id) {
+                const queryString = (location.search) ? location.search + `&boardTable=${boardTable}&id=${id}` : `?boardTable=${boardTable}&id=${id}`;
+                location.href = '/board/view' + queryString;
+            }
+
+			// 게시글쓰기 페이지로 이동
+			function goWritePage() {
+                const queryString = (location.search) ? location.search + `&boardTable=${boardTable}` : `?boardTable=${boardTable}`;
+                location.href = '/board/write' + queryString;
+            }
+            /*]]>*/
+
+	    	// header checkbox event
+	    	$("#chkAll").click(function() {
+	    		if (this.checked) {
+	    			$("input[name='deleteId']").prop("checked", true);
+	    		} else {
+	    			$("input[name='deleteId']").prop("checked", false);
+	    		}
+	    	});
+	    	
+	    	// body checkbox event
+	    	$("input[name='deleteId']").click(function() {
+	    		let delInpLen = $("input[name='deleteId']").length;
+	    		let delInpChkLen = $("input[name='deleteId']:checked").length;
+	    		
+	    		if (delInpLen == delInpChkLen) {
+	    			$("#chkAll").prop("checked", true);
+	    		} else {
+	    			$("#chkAll").prop("checked", false);
+	    		}
+	    	});
+	    
+			function fnDelete() {
+				let delInpChkLen = $("input[name='deleteId']:checked").length;
+				
+				if (delInpChkLen > 0) {
+					if (confirm("Do you want to delete it?")) {
+						let frm = $("#frm");
+						frm.attr("action","/board/delete" + location.search + `&boardTable=${boardTable}`);
+						frm.attr("method","post");
+						frm.submit();
+					}
+				} else {
+					alert("Not selected.");
+				}
+			}
+
+			/**
+			 * 조회 API 호출
+			 */
+			async function getJson(uri, params) {
+
+			if (params) {
+				uri = uri + '?' + new URLSearchParams(params).toString();
+			}
+
+			const response = await fetch(uri);
+
+			if (!response.ok) {
+				await response.json().then(error => {
+					throw error;
+				});
+			}
+
+			return await response.json();
+			}
+			$("#subSearchKeyword").on("keyup", function(e) {                
+				if (e.key == "Enter")
+				{
+					var keyword = document.getElementById("keyword");
+					if (isEmpty(keyword.value) == true) {
+						alert("키워드를 입력해 주세요.");
+						return false;
+					}                    
+					else
+					{											
+						movePage(1);
+					}
+				}
+			});
+		</script>
+	</th:block>
+</html>

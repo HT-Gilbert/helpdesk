@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.help.admin.repository.RoleMapper">
+
+	<sql id="roleColumns">
+		  role_priority
+		, role_name
+	</sql>
+
+	<sql id="insertRoleColumns">
+        role_priority
+		, role_name
+	</sql>
+
+	<select id="selectRolePriority" parameterType="String" resultType="String">
+		SELECT
+			IFNULL(role_priority, 15)
+		FROM
+            role_list
+		WHERE
+			role_name = #{roleName}
+	</select>
+
+	<select id="selectApproachList" parameterType="String" resultType="LIST">
+		SELECT
+			IFNULL(role_priority, 15)
+		FROM
+            role_list
+		WHERE
+			role_name = #{roleName}
+	</select>
+
+</mapper>

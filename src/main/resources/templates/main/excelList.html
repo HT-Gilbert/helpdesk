@@ -1,0 +1,36 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/layout">
+    <th:block layout:fragment="content">
+      <meta charset="utf-8">
+      <div class="container">
+          <hr>
+          <div class="row">
+              <div class="col-md-2">
+                  <!-- NAV 영역-->
+                  <th:block th:replace="layout/fragments/nav :: sidebarFragment"></th:block>
+              </div>
+              <div class="col-md-10">
+                <table class="table table-striped">
+                  <thead>
+                  <tr>
+                    <th scope="col">구분</th>
+                    <th scope="col">Host-Name</th>
+                    <th scope="col">Host-Name 예시</th>
+                    <th scope="col">비고</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="data : ${datas}" >
+                    <!--<td scope="row" th:text="${data.num}"></td>-->
+                    <td th:text="${data.num}"></td>
+                    <td th:text="${data.name}"></td>
+                    <td contenteditable='true' th:text="${data.nameExam}"></td>
+                    <td th:text="${data.etc}"></td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+    </th:block>
+
+</html>

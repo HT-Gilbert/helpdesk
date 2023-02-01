@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.help.board.repository.BoardAttachMapper">
+
+	<sql id="attachColumns">
+		  id
+		, list_id
+        , board_id
+		, original_name
+		, save_name
+		, file_size
+        , file_ext
+		, bdelete
+		, register_time
+		, delete_time
+	</sql>
+
+	<insert id="insertAttach" parameterType="list">
+		INSERT INTO board_attach (
+			<include refid="attachColumns" />
+		) VALUES
+		<foreach collection="list" item="item" separator=",">
+		(
+			  #{item.id}
+			, #{item.listId}
+            , #{item.boardId}
+			, #{item.originalName}
+			, #{item.saveName}
+			, #{item.fileSize}
+            , #{item.fileExt}
+			, '0'
+			, NOW()
+			, NULL
+		)
+		</foreach>
+	</insert>
+
+	<select id="selectAttachDetail" parameterType="long" resultType="com.help.board.dto.BoardAttachRequestDto">
+		SELECT
+			<include refid="attachColumns" />
+		FROM
+            board_attach
+		WHERE
+			bdelete = '0'
+		AND
+			id = #{id}
+	</select>
+
+	<update id="deleteAttach" parameterType="hashmap">
+		UPDATE board_attach
+		SET
+            bdelete = '1'
+			, delete_time = NOW()
+		WHERE
+			board_id = #{boardId}
+        AND
+			list_id = #{listId}
+	</update>
+
+	<delete id="deleteAttachData" parameterType="hashmap">
+		UPDATE board_attach
+		SET
+            bdelete = '1'
+			, delete_time = NOW()
+		WHERE
+			board_id = #{boardId}
+        AND
+			list_id = #{listId}
+	</delete>
+
+	<update id="deleteAttachList" parameterType="hashmap">
+		UPDATE board_attach
+		SET
+            bdelete = '1'
+			, delete_time = NOW()
+		WHERE
+			board_id = #{boardId}
+        AND
+			list_id IN
+		<foreach collection="deleteIdList " item="item" separator="," open="(" close=")">
+			#{item.value}
+		</foreach>
+	</update>
+
+	<delete id="deleteAttachListData" parameterType="hashmap">
+		DELETE FROM 
+			board_attach
+		WHERE
+			board_id = #{boardId}
+        AND
+			list_id IN
+		<foreach collection="deleteIdList " item="item" separator="," open="(" close=")">
+			#{item.value}
+		</foreach>
+	</delete>
+
+	<select id="selectAttachList" parameterType="hashmap" resultType="com.help.board.dto.BoardAttachDto">
+		SELECT
+			<include refid="attachColumns" />
+		FROM
+            board_attach
+		WHERE
+            bdelete = '0'
+		AND
+			list_id = #{listId}
+        AND
+            board_id = #{boardId}
+	</select>
+
+	<select id="selectAttachTotalCount" parameterType="hashmap" resultType="int">
+		SELECT
+			COUNT(*)
+        FROM
+            board_attach
+		WHERE
+            bdelete = '0'
+		AND
+			list_id = #{listId}
+        AND
+            board_id = #{boardId}
+	</select>
+
+	<update id="undeleteAttach" parameterType="list">
+		UPDATE board_attach
+		SET
+			bdelete = '0'
+			,delete_time = NULL
+		WHERE
+			id IN
+		<foreach collection="list" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
+
+</mapper>
